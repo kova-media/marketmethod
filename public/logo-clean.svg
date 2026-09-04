@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 210" role="img" aria-labelledby="title desc">
+  <title id="title">Market Method</title>
+  <desc id="desc">Market Method logo with three ascending marks and the words Market Method, Business Grows Here.</desc>
+  <g fill="#111111">
+    <path d="M24 82 80 42v92l-56 40z"/>
+    <path d="M92 68 148 28v92l-56 40z"/>
+    <path d="M160 54 216 14v92l-56 40z"/>
+    <text x="250" y="78" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="800" letter-spacing="1">MARKET</text>
+    <text x="250" y="143" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="800" letter-spacing="1">METHOD</text>
+    <text x="253" y="176" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" letter-spacing="8">BUSINESS GROWS HERE</text>
+  </g>
+</svg>
