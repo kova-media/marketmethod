@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         from: 'Market Method <leads@marketmethod.co>',
         to: ['damian@kovamediagroup.com'],
         reply_to: email,
-        subject: `Market Method: New Lead: ${businessName}`,
+        subject: `New Lead: ${businessName}`,
         text: [
           `Name: ${name}`,
           `Email: ${email}`,
