@@ -3,32 +3,29 @@
 import { FormEvent, useState } from 'react'
 
 const systems = [
-  ['Website', 'A clear first impression that gives people a reason to contact you.'],
-  ['Lead capture', 'Make it easy to ask for a quote, call, or request service.'],
-  ['Scheduling', 'Give ready-to-buy customers a simple way to book.'],
-  ['Lead follow-up', 'Follow up when someone asks but does not book.'],
-  ['Customer reactivation', 'Give past customers a reason to come back.'],
-  ['Review requests', 'Ask satisfied customers for a Google review.'],
-  ['Attribution', 'See where inquiries come from and what happens next.'],
-  ['Revenue tracking', 'Connect leads and bookings to the revenue they create.'],
+  ['Website', 'Turn visitors into leads.'],
+  ['CRM', 'Know who your customers are and what happens next.'],
+  ['Lead Nurture', "Follow up automatically when a lead doesn't respond."],
+  ['Customer Retention', 'Bring customers back before they forget about you.'],
+  ['Customer Service', 'Handle routine questions and requests automatically.'],
 ]
 
-const industries = ['Automotive', 'Healthcare practices', 'Personal care', 'Skilled trades', 'Professional services', 'Local specialty businesses']
+const industries = ['Home Services', 'Cleaning', 'Auto Services', 'Dental', 'Beauty & Personal Care', 'Professional Services']
 
 const faqs = [
-  ['Is Market Method a marketing agency?', 'Not in the traditional sense. We focus on what happens after someone finds your business: contacting you, getting a response, booking, returning, and becoming revenue.'],
-  ['Do I have to pay for a new website upfront?', 'Not necessarily. Depending on the business and opportunity, an engagement can be structured with little or no upfront cost and compensation tied to results.'],
-  ['What kinds of businesses do you work with?', 'Local service businesses where a qualified inquiry can become a meaningful revenue event. That can include mechanics, dental and eye care practices, barbers, tailors, trades, and other local businesses that serve customers directly.'],
-  ['How do you measure results?', 'We start with the inquiry and follow the customer journey through booking and, where the data is available, the completed service and resulting revenue.'],
+  ['Is Market Method a web design company?', 'No. The website is one part of a larger customer acquisition, follow-up, and retention system. It is the front door to the system, not the whole product.'],
+  ['What does the system include?', 'Market Method connects your website, CRM, lead follow-up, customer retention, and customer communication into one operating system for the business.'],
+  ['Do you replace our existing software?', 'Not necessarily. We start with what the business already uses and determine what needs to connect, change, or be added.'],
+  ['Is the automated customer service live today?', 'It is an evolving capability. We are building toward automated phone and email support for routine questions, information collection, and booking, with more complicated situations handed to a real person.'],
 ]
 
 const improvementOptions = [
-  'Get more leads',
-  'Get more calls',
-  'Turn more leads into customers',
+  'Capture more leads',
   'Follow up with leads',
   'Get more repeat customers',
+  'Automate customer communication',
   'Improve the website',
+  'Organize customer information',
 ]
 
 function LeadModal({ onClose }: { onClose: () => void }) {
@@ -84,9 +81,9 @@ function LeadModal({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <>
-            <p className="form-kicker">BUSINESS REVIEW</p>
-            <h2>Let&apos;s find where your business can improve.</h2>
-            <p className="modal-intro">A few details about the business and what you want to improve. We&apos;ll use them to understand where to look.</p>
+            <p className="form-kicker">GET STARTED</p>
+            <h2>Let&apos;s build a better customer system.</h2>
+            <p className="modal-intro">Tell us a little about the business and where you want to improve. We&apos;ll take it from there.</p>
             <form onSubmit={submitLead}>
               <div className="form-grid">
                 <input required name="name" placeholder="Your name *" aria-label="Your name" autoComplete="name" />
@@ -97,7 +94,6 @@ function LeadModal({ onClose }: { onClose: () => void }) {
                 <input required name="businessName" placeholder="Business name *" aria-label="Business name" autoComplete="organization" />
               </div>
               <input name="website" placeholder="Website URL" aria-label="Website URL" autoComplete="url" />
-
               <fieldset className="improvement-fieldset">
                 <legend>What would you like to improve?</legend>
                 <div className="improvement-grid">
@@ -109,11 +105,9 @@ function LeadModal({ onClose }: { onClose: () => void }) {
                   ))}
                 </div>
               </fieldset>
-
               <textarea name="message" placeholder="Anything else we should know?" rows={3} aria-label="Anything else we should know?" />
-
               <input className="honeypot" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-              <button className="button form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending...' : 'Request a business review'}</button>
+              <button className="button form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending...' : 'Get Started'}</button>
               <p className="form-note">No commitment required to submit a request.</p>
               {status === 'error' && <p className="form-error">{error}</p>}
             </form>
@@ -124,38 +118,35 @@ function LeadModal({ onClose }: { onClose: () => void }) {
   )
 }
 
-function RevenueCalculator() {
-  const [averageCustomerValue, setAverageCustomerValue] = useState(500)
-  const [leads, setLeads] = useState(40)
-  const [conversionRate, setConversionRate] = useState(25)
-  const [targetRate, setTargetRate] = useState(35)
-
-  const currentRevenue = Math.round(averageCustomerValue * leads * (conversionRate / 100))
-  const targetRevenue = Math.round(averageCustomerValue * leads * (targetRate / 100))
-  const difference = Math.max(0, targetRevenue - currentRevenue)
+function DashboardPreview() {
+  const rows = [
+    ['New Leads', '8', 'Today'],
+    ['Follow-Ups Due', '14', 'This week'],
+    ['Appointments', '23', 'Upcoming'],
+    ['Recent Customers', '31', 'This month'],
+    ['Open Conversations', '6', 'Needs attention'],
+    ['Ready to Re-engage', '19', 'Past customers'],
+  ]
 
   return (
-    <section className="calculator">
-      <div className="wrap calculator-grid">
-        <div className="calculator-copy">
-          <h2>See what a better conversion rate could be worth.</h2>
-          <p>This is a planning tool, not a forecast. Change the assumptions to see the difference between your current conversion rate and a higher one.</p>
-        </div>
-        <div className="calculator-box">
-          <div className="calc-inputs">
-            <label>Average customer value <span>${averageCustomerValue.toLocaleString()}</span><input type="range" min="50" max="5000" step="50" value={averageCustomerValue} onChange={(e) => setAverageCustomerValue(Number(e.target.value))} /></label>
-            <label>Inquiries per month <span>{leads}</span><input type="range" min="5" max="200" step="5" value={leads} onChange={(e) => setLeads(Number(e.target.value))} /></label>
-            <label>Current conversion rate <span>{conversionRate}%</span><input type="range" min="1" max="80" value={conversionRate} onChange={(e) => setConversionRate(Number(e.target.value))} /></label>
-            <label>Comparison conversion rate <span>{targetRate}%</span><input type="range" min="1" max="80" value={targetRate} onChange={(e) => setTargetRate(Number(e.target.value))} /></label>
+    <div className="dashboard-preview">
+      <div className="dashboard-top"><span>MARKET METHOD</span><strong>CUSTOMER SYSTEM</strong></div>
+      <div className="dashboard-grid">
+        {rows.map(([label, value, note]) => (
+          <div className="dashboard-card" key={label}>
+            <span>{label}</span>
+            <strong>{value}</strong>
+            <small>{note}</small>
           </div>
-          <div className="calc-results">
-            <div><span>Current monthly revenue</span><strong>${currentRevenue.toLocaleString()}</strong></div>
-            <div><span>At {targetRate}% conversion</span><strong>${targetRevenue.toLocaleString()}</strong></div>
-            <div className="calc-difference"><span>Difference</span><strong>${difference.toLocaleString()}</strong></div>
-          </div>
-        </div>
+        ))}
       </div>
-    </section>
+      <div className="dashboard-activity">
+        <span>RECENT ACTIVITY</span>
+        <div><strong>Lead follow-up</strong><small>Quote request · 12 min ago</small></div>
+        <div><strong>Retention</strong><small>Service reminder · 1 hr ago</small></div>
+        <div><strong>Customer service</strong><small>Question routed · 2 hrs ago</small></div>
+      </div>
+    </div>
   )
 }
 
@@ -172,109 +163,154 @@ export default function Home() {
           <a href="#process">How it works</a>
           <a href="#fit">Who it&apos;s for</a>
         </div>
-        <button className="button nav-cta" onClick={() => setModal(true)}>Get your business reviewed</button>
+        <button className="button nav-cta" onClick={() => setModal(true)}>Get Started</button>
       </nav>
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <h1>Turn more inquiries into customers.</h1>
-          <p className="hero-sub">We build and operate the system that turns a customer finding your business into a customer paying you.</p>
+          <p className="eyebrow">CUSTOMER ACQUISITION · FOLLOW-UP · RETENTION</p>
+          <h1>Turn more leads into customers. Turn more customers into repeat business.</h1>
+          <p className="hero-sub">Your website gets the customer in the door. Market Method helps you get more from every customer.</p>
+          <p className="hero-detail">We build the website and the systems behind it to capture customers, follow up with leads, keep customer relationships organized, and bring people back.</p>
           <div className="hero-actions">
-            <button className="button" onClick={() => setModal(true)}>Get your business reviewed</button>
-            <button className="text-button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See what we build</button>
+            <button className="button" onClick={() => setModal(true)}>Get Started</button>
+            <button className="text-button" onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}>See How It Works</button>
           </div>
         </div>
-        <div className="hero-gap">
-          <p className="hero-gap-label">THE GAP</p>
-          <p className="hero-gap-headline">A lead is not revenue.</p>
-          <div className="hero-gap-flow">
-            <div><strong>Inquiry</strong><span>Someone raises their hand.</span></div>
-            <div><strong>Response</strong><span>They get a useful next step.</span></div>
-            <div><strong>Booking</strong><span>The opportunity becomes a customer.</span></div>
-            <div><strong>Revenue</strong><span>The customer is measured as revenue.</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section className="statement">
-        <div className="wrap statement-inner">
-          <div className="statement-main">
-            <h2>Most businesses work hard to get the lead. Then they leave the rest to chance.</h2>
-            <p>Market Method takes responsibility for the part that comes next.</p>
-          </div>
-          <div className="statement-points">
-            <div><h3>Respond</h3><p>Make sure the inquiry gets a fast, useful response.</p></div>
-            <div><h3>Convert</h3><p>Make the next step simple enough to complete.</p></div>
-            <div><h3>Return</h3><p>Bring past customers back when there is another reason to buy.</p></div>
+        <div className="hero-system">
+          <div className="system-label">ONE CONNECTED SYSTEM</div>
+          <div className="system-flow">
+            <div><strong>Website</strong><span>Capture</span></div>
+            <div><strong>Lead</strong><span>Organize</span></div>
+            <div><strong>Follow-Up</strong><span>Nurture</span></div>
+            <div><strong>Customer</strong><span>Serve</span></div>
+            <div><strong>Retention</strong><span>Return</span></div>
           </div>
         </div>
       </section>
 
-      <section className="system wrap" id="system">
+      <section className="problem section-dark">
+        <div className="wrap problem-inner">
+          <div className="problem-copy">
+            <p className="eyebrow dark">THE PROBLEM</p>
+            <h2>A customer reaches out. Then the process breaks down.</h2>
+          </div>
+          <div className="problem-list">
+            <div><strong>They call.</strong><span>No one gets back to them.</span></div>
+            <div><strong>They ask for a quote.</strong><span>The follow-up gets forgotten.</span></div>
+            <div><strong>They become a customer.</strong><span>Nothing brings them back.</span></div>
+            <div><strong>The owner gets busy.</strong><span>Every message becomes another task.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="system-section wrap" id="system">
         <div className="section-head">
-          <div><h2>The pieces that turn demand into customers.</h2></div>
-          <p>One connected system, built around the way your customers actually buy.</p>
+          <div><p className="eyebrow">ONE SYSTEM</p><h2>Every part works together.</h2></div>
+          <p>The website, customer records, follow-up, retention, and communication are connected instead of living in separate tools and processes.</p>
         </div>
-        <div className="system-list">
-          {systems.map(([title, description]) => <article className="system-item" key={title}><h3>{title}</h3><p>{description}</p></article>)}
+        <div className="system-journey">
+          <div><span>01</span><strong>Website</strong><small>Customer finds you</small></div>
+          <div><span>02</span><strong>Lead</strong><small>They reach out</small></div>
+          <div><span>03</span><strong>Follow-Up</strong><small>Stay in the conversation</small></div>
+          <div><span>04</span><strong>Customer</strong><small>Book or buy</small></div>
+          <div><span>05</span><strong>Retention</strong><small>Come back again</small></div>
         </div>
       </section>
 
-      <RevenueCalculator />
-
-      <section className="journey">
-        <div className="wrap journey-inner">
-          <div className="journey-copy">
-            <h2>Where the money gets lost.</h2>
-            <p>A customer can find you, contact you, and still never become a customer. We build around those gaps.</p>
+      <section className="offer section-stone">
+        <div className="wrap">
+          <div className="section-head">
+            <div><p className="eyebrow">WHAT MARKET METHOD DOES</p><h2>The infrastructure behind the customer.</h2></div>
+            <p>Five connected pieces built around the way local businesses actually acquire and keep customers.</p>
           </div>
-          <div className="journey-path" aria-label="Customer journey from discovery to revenue">
-            <div><strong>Find</strong><span>Someone discovers the business.</span></div>
-            <div><strong>Contact</strong><span>They call, submit a request, or start a conversation.</span></div>
-            <div><strong>Decide</strong><span>They get a response, quote, or booking option.</span></div>
-            <div><strong>Book</strong><span>The opportunity becomes a scheduled appointment or service.</span></div>
-            <div><strong>Return</strong><span>The customer has a reason to come back.</span></div>
+          <div className="offer-grid">
+            {systems.map(([title, description], index) => (
+              <article className="offer-card" key={title}>
+                <span className="offer-number">0{index + 1}</span>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="process wrap" id="process">
-        <div className="process-intro"><h2>We find the weak points, then build around them.</h2></div>
+        <div className="process-intro">
+          <p className="eyebrow">HOW IT WORKS</p>
+          <h2>Simple for you. Connected behind the scenes.</h2>
+        </div>
         <div className="process-list">
-          <article className="process-row"><h3>Find the leaks</h3><p>We look at what happens when someone finds you and where opportunities disappear.</p></article>
-          <article className="process-row"><h3>Build the system</h3><p>We build the website and infrastructure around the gaps that matter most.</p></article>
-          <article className="process-row"><h3>Operate it</h3><p>Follow-up, booking, review requests, reactivation, and measurement become part of the system.</p></article>
-          <article className="process-row"><h3>Measure revenue</h3><p>We follow the path from inquiry to customer and, where possible, the revenue it creates.</p></article>
+          <article className="process-row"><span>01</span><div><h3>We build your system.</h3><p>We set up the website and the customer systems around the parts of your business that need the most attention.</p></div></article>
+          <article className="process-row"><span>02</span><div><h3>Customers contact your business.</h3><p>Calls, forms, quote requests, appointments, and other customer inquiries flow into the system.</p></div></article>
+          <article className="process-row"><span>03</span><div><h3>Market Method follows up.</h3><p>Leads get timely follow-up instead of disappearing because nobody had time to chase them.</p></div></article>
+          <article className="process-row"><span>04</span><div><h3>You close the business and serve the customer.</h3><p>The system keeps the relationship organized and creates opportunities to bring the customer back.</p></div></article>
         </div>
       </section>
 
-      <section className="risk">
-        <div className="wrap risk-grid">
-          <div><h2>Our incentives should look more like yours.</h2></div>
-          <div><p className="risk-big">We can put more of our compensation at risk.</p><p className="muted">Depending on the business, that can mean little or no upfront cost, with Market Method participating in the upside when the system produces additional revenue.</p></div>
+      <section className="website-section section-dark">
+        <div className="wrap feature-grid">
+          <div><p className="eyebrow dark">THE WEBSITE</p><h2>Your website is the front door.</h2><p className="feature-copy">We build a modern, conversion-focused website that makes it easy for the right customer to contact you. It connects directly to the rest of the Market Method system.</p></div>
+          <div className="feature-points"><div><strong>Clear</strong><span>Customers understand what you do and what to do next.</span></div><div><strong>Focused</strong><span>Calls, forms, quote requests, and bookings have a clear path.</span></div><div><strong>Connected</strong><span>New inquiries move into the customer system instead of stopping at the website.</span></div></div>
+        </div>
+      </section>
+
+      <section className="crm-section wrap">
+        <div className="feature-grid crm-grid">
+          <div><p className="eyebrow">CRM + AUTOMATION</p><h2>Know what needs attention.</h2><p className="feature-copy">A simple owner-facing system keeps leads, customers, appointments, conversations, and follow-ups organized in one place.</p></div>
+          <DashboardPreview />
+        </div>
+      </section>
+
+      <section className="retention section-stone">
+        <div className="wrap feature-grid">
+          <div><p className="eyebrow">RETENTION</p><h2>Getting the customer is only part of the job.</h2><p className="feature-copy">Market Method can automate the routine communication that keeps the relationship moving.</p></div>
+          <div className="retention-list">
+            <div><strong>After-service follow-up</strong><span>Check in after the job and keep the relationship active.</span></div>
+            <div><strong>Appointment reminders</strong><span>Help customers remember what they already scheduled.</span></div>
+            <div><strong>Review requests</strong><span>Ask satisfied customers for feedback at the right time.</span></div>
+            <div><strong>Repeat-service reminders</strong><span>Reach out when another service is likely to be due.</span></div>
+            <div><strong>Reactivation</strong><span>Bring back customers who have gone quiet.</span></div>
+            <div><strong>Promotional campaigns</strong><span>Give existing customers another reason to buy.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="service section-dark">
+        <div className="wrap feature-grid">
+          <div><p className="eyebrow dark">AUTOMATED CUSTOMER SERVICE</p><h2>Let the system handle the routine.</h2><p className="feature-copy">We are building toward automated phone and email customer service that can answer common questions, collect information, handle routine requests, book appointments, and hand complicated situations to a real person.</p><span className="capability-note">AN EVOLVING CAPABILITY</span></div>
+          <div className="service-flow"><div><span>Customer calls or emails</span><strong>Common question?</strong></div><div><span>System handles the routine</span><strong>Collects information</strong></div><div><span>Booking or next step</span><strong>Moves the customer forward</strong></div><div><span>Something complex?</span><strong>Hands it to a person</strong></div></div>
         </div>
       </section>
 
       <section className="fit wrap" id="fit">
         <div className="section-head fit-head">
-          <div><h2>Built for local service businesses.</h2></div>
-          <p>We are intentionally not limited to one trade. The model can apply to businesses that serve customers directly and where the customer journey can be improved and measured.</p>
+          <div><p className="eyebrow">WHO IT&apos;S FOR</p><h2>Built for local businesses where every customer matters.</h2></div>
+          <p>Especially useful for businesses that depend on appointments, quotes, repeat service, or ongoing customer relationships.</p>
         </div>
-        <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}</div>
+        <div className="industry-list">{industries.map((industry, index) => <div key={industry}><span>0{index + 1}</span><h3>{industry}</h3></div>)}</div>
+      </section>
+
+      <section className="outcome section-dark">
+        <div className="wrap outcome-inner">
+          <div><p className="eyebrow dark">THE OUTCOME</p><h2>Stop losing customers between the cracks.</h2></div>
+          <div className="outcome-points"><p>Capture more leads.</p><p>Follow up faster.</p><p>Stay organized.</p><p>Bring customers back.</p><p>Spend less time answering the same questions.</p></div>
+        </div>
       </section>
 
       <section className="faq wrap">
-        <div><h2>Before we talk numbers.</h2></div>
+        <div><p className="eyebrow">QUESTIONS</p><h2>Before you get started.</h2></div>
         <div className="faq-list">
           {faqs.map(([question, answer], index) => <div className="faq-row" key={question}><button onClick={() => setOpen(open === index ? null : index)} aria-expanded={open === index}><span>{question}</span><span className="faq-mark">{open === index ? '−' : '+'}</span></button>{open === index && <p>{answer}</p>}</div>)}
         </div>
       </section>
 
-      <section className="cta"><div className="wrap cta-inner"><h2>Find the customers you are losing.</h2><button className="button" onClick={() => setModal(true)}>Get your business reviewed</button></div></section>
+      <section className="cta"><div className="wrap cta-inner"><p className="eyebrow">GET STARTED</p><h2>Build a better customer system.</h2><p>Start with the website. Build from there.</p><button className="button" onClick={() => setModal(true)}>Get Started</button></div></section>
 
       <footer className="footer wrap">
         <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
-        <p>Revenue infrastructure for local service businesses.</p>
+        <p>Customer acquisition, follow-up, and retention systems for local businesses.</p>
         <p>© 2026 Market Method, a division of Kova Media Group</p>
       </footer>
 
