@@ -98,7 +98,6 @@ export default function Home() {
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <p className="hero-kicker">Market Method</p>
           <h1>Turn more inquiries into booked jobs.</h1>
           <p className="hero-sub">We build and operate the system that turns a customer finding your business into a customer paying you.</p>
           <div className="hero-actions">
