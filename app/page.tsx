@@ -105,21 +105,27 @@ export default function Home() {
           <a href="#process">How it works</a>
           <a href="#fit">Who it&apos;s for</a>
         </div>
-        <button className="button button-dark nav-cta" onClick={() => setModal(true)}>Apply to work with us</button>
+        <button className="button nav-cta" onClick={() => setModal(true)}>Apply to work with us</button>
       </nav>
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <h1>More of the people who find you should become customers.</h1>
-          <p className="hero-sub">Market Method builds and operates the systems that turn more inquiries into booked work and repeat customers.</p>
+          <h1>Turn more inquiries into booked jobs.</h1>
+          <p className="hero-sub">Market Method builds and operates the system between a customer finding your business and paying you.</p>
           <div className="hero-actions">
-            <button className="button button-dark" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See how it works</button>
+            <button className="button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See the system</button>
             <button className="text-button" onClick={() => setModal(true)}>Apply to work with us</button>
           </div>
         </div>
-        <div className="hero-note" aria-label="Market Method point of view">
-          <blockquote>A lead is not a customer.</blockquote>
-          <span>There is a gap between someone finding you and someone paying you. That is where we work.</span>
+        <div className="hero-proof">
+          <p className="hero-proof-title">The gap we work on</p>
+          <div className="hero-proof-flow">
+            <span>Customer finds you</span>
+            <span>They reach out</span>
+            <span>They book</span>
+            <span>You get the job</span>
+          </div>
+          <p className="hero-proof-note">Most businesses spend money getting the first step right. We focus on everything that happens after it.</p>
         </div>
       </section>
 
@@ -215,7 +221,7 @@ export default function Home() {
       <section className="cta">
         <div className="wrap cta-inner">
           <h2>Let&apos;s see where the next job is getting lost.</h2>
-          <button className="button button-light" onClick={() => setModal(true)}>Apply to work with us</button>
+          <button className="button" onClick={() => setModal(true)}>Apply to work with us</button>
         </div>
       </section>
 
