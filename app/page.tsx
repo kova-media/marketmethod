@@ -10,22 +10,22 @@ const systems = [
   ['Customer reactivation', 'Give past customers a reason to come back.'],
   ['Review requests', 'Ask satisfied customers for a Google review.'],
   ['Attribution', 'See where inquiries come from and what happens next.'],
-  ['Revenue tracking', 'Connect leads and bookings to the work they create.'],
+  ['Revenue tracking', 'Connect leads and bookings to the revenue they create.'],
 ]
 
-const industries = ['Home services', 'Professional services', 'Health & wellness', 'Automotive', 'Local specialty businesses']
+const industries = ['Automotive', 'Healthcare practices', 'Personal care', 'Skilled trades', 'Professional services', 'Local specialty businesses']
 
 const faqs = [
   ['Is Market Method a marketing agency?', 'Not in the traditional sense. We focus on what happens after someone finds your business: contacting you, getting a response, booking, returning, and becoming revenue.'],
   ['Do I have to pay for a new website upfront?', 'Not necessarily. Depending on the business and opportunity, an engagement can be structured with little or no upfront cost and compensation tied to results.'],
-  ['What kinds of businesses do you work with?', 'Local service businesses where a qualified lead can become a meaningful revenue event. That includes home services, professional services, health and wellness, automotive, and specialty businesses.'],
-  ['How do you measure results?', 'We start with the inquiry and follow the customer journey through booking and, where the data is available, the completed job and resulting revenue.'],
+  ['What kinds of businesses do you work with?', 'Local service businesses where a qualified inquiry can become a meaningful revenue event. That can include mechanics, dental and eye care practices, barbers, tailors, trades, and other local businesses that serve customers directly.'],
+  ['How do you measure results?', 'We start with the inquiry and follow the customer journey through booking and, where the data is available, the completed service and resulting revenue.'],
 ]
 
 const improvementOptions = [
   'Get more leads',
   'Get more calls',
-  'Turn more leads into jobs',
+  'Turn more leads into customers',
   'Follow up with leads',
   'Get more repeat customers',
   'Improve the website',
@@ -125,13 +125,13 @@ function LeadModal({ onClose }: { onClose: () => void }) {
 }
 
 function RevenueCalculator() {
-  const [averageJob, setAverageJob] = useState(500)
+  const [averageCustomerValue, setAverageCustomerValue] = useState(500)
   const [leads, setLeads] = useState(40)
-  const [closeRate, setCloseRate] = useState(25)
+  const [conversionRate, setConversionRate] = useState(25)
   const [targetRate, setTargetRate] = useState(35)
 
-  const currentRevenue = Math.round(averageJob * leads * (closeRate / 100))
-  const targetRevenue = Math.round(averageJob * leads * (targetRate / 100))
+  const currentRevenue = Math.round(averageCustomerValue * leads * (conversionRate / 100))
+  const targetRevenue = Math.round(averageCustomerValue * leads * (targetRate / 100))
   const difference = Math.max(0, targetRevenue - currentRevenue)
 
   return (
@@ -143,14 +143,14 @@ function RevenueCalculator() {
         </div>
         <div className="calculator-box">
           <div className="calc-inputs">
-            <label>Average job value <span>${averageJob.toLocaleString()}</span><input type="range" min="50" max="5000" step="50" value={averageJob} onChange={(e) => setAverageJob(Number(e.target.value))} /></label>
-            <label>Leads per month <span>{leads}</span><input type="range" min="5" max="200" step="5" value={leads} onChange={(e) => setLeads(Number(e.target.value))} /></label>
-            <label>Current close rate <span>{closeRate}%</span><input type="range" min="1" max="80" value={closeRate} onChange={(e) => setCloseRate(Number(e.target.value))} /></label>
-            <label>Comparison close rate <span>{targetRate}%</span><input type="range" min="1" max="80" value={targetRate} onChange={(e) => setTargetRate(Number(e.target.value))} /></label>
+            <label>Average customer value <span>${averageCustomerValue.toLocaleString()}</span><input type="range" min="50" max="5000" step="50" value={averageCustomerValue} onChange={(e) => setAverageCustomerValue(Number(e.target.value))} /></label>
+            <label>Inquiries per month <span>{leads}</span><input type="range" min="5" max="200" step="5" value={leads} onChange={(e) => setLeads(Number(e.target.value))} /></label>
+            <label>Current conversion rate <span>{conversionRate}%</span><input type="range" min="1" max="80" value={conversionRate} onChange={(e) => setConversionRate(Number(e.target.value))} /></label>
+            <label>Comparison conversion rate <span>{targetRate}%</span><input type="range" min="1" max="80" value={targetRate} onChange={(e) => setTargetRate(Number(e.target.value))} /></label>
           </div>
           <div className="calc-results">
             <div><span>Current monthly revenue</span><strong>${currentRevenue.toLocaleString()}</strong></div>
-            <div><span>At {targetRate}% close rate</span><strong>${targetRevenue.toLocaleString()}</strong></div>
+            <div><span>At {targetRate}% conversion</span><strong>${targetRevenue.toLocaleString()}</strong></div>
             <div className="calc-difference"><span>Difference</span><strong>${difference.toLocaleString()}</strong></div>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function Home() {
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <h1>Turn more inquiries into booked jobs.</h1>
+          <h1>Turn more inquiries into customers.</h1>
           <p className="hero-sub">We build and operate the system that turns a customer finding your business into a customer paying you.</p>
           <div className="hero-actions">
             <button className="button" onClick={() => setModal(true)}>Get your business reviewed</button>
@@ -190,8 +190,8 @@ export default function Home() {
           <div className="hero-gap-flow">
             <div><strong>Inquiry</strong><span>Someone raises their hand.</span></div>
             <div><strong>Response</strong><span>They get a useful next step.</span></div>
-            <div><strong>Booking</strong><span>The opportunity becomes work.</span></div>
-            <div><strong>Revenue</strong><span>The work gets measured.</span></div>
+            <div><strong>Booking</strong><span>The opportunity becomes a customer.</span></div>
+            <div><strong>Revenue</strong><span>The customer is measured as revenue.</span></div>
           </div>
         </div>
       </section>
@@ -204,15 +204,15 @@ export default function Home() {
           </div>
           <div className="statement-points">
             <div><h3>Respond</h3><p>Make sure the inquiry gets a fast, useful response.</p></div>
-            <div><h3>Book</h3><p>Make the next step simple enough to complete.</p></div>
-            <div><h3>Return</h3><p>Bring past customers back when there is another job to do.</p></div>
+            <div><h3>Convert</h3><p>Make the next step simple enough to complete.</p></div>
+            <div><h3>Return</h3><p>Bring past customers back when there is another reason to buy.</p></div>
           </div>
         </div>
       </section>
 
       <section className="system wrap" id="system">
         <div className="section-head">
-          <div><h2>The pieces that turn demand into work.</h2></div>
+          <div><h2>The pieces that turn demand into customers.</h2></div>
           <p>One connected system, built around the way your customers actually buy.</p>
         </div>
         <div className="system-list">
@@ -226,13 +226,13 @@ export default function Home() {
         <div className="wrap journey-inner">
           <div className="journey-copy">
             <h2>Where the money gets lost.</h2>
-            <p>A customer can find you, contact you, and still never become a job. We build around those gaps.</p>
+            <p>A customer can find you, contact you, and still never become a customer. We build around those gaps.</p>
           </div>
           <div className="journey-path" aria-label="Customer journey from discovery to revenue">
             <div><strong>Find</strong><span>Someone discovers the business.</span></div>
             <div><strong>Contact</strong><span>They call, submit a request, or start a conversation.</span></div>
             <div><strong>Decide</strong><span>They get a response, quote, or booking option.</span></div>
-            <div><strong>Book</strong><span>The opportunity becomes scheduled work.</span></div>
+            <div><strong>Book</strong><span>The opportunity becomes a scheduled appointment or service.</span></div>
             <div><strong>Return</strong><span>The customer has a reason to come back.</span></div>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default function Home() {
           <article className="process-row"><h3>Find the leaks</h3><p>We look at what happens when someone finds you and where opportunities disappear.</p></article>
           <article className="process-row"><h3>Build the system</h3><p>We build the website and infrastructure around the gaps that matter most.</p></article>
           <article className="process-row"><h3>Operate it</h3><p>Follow-up, booking, review requests, reactivation, and measurement become part of the system.</p></article>
-          <article className="process-row"><h3>Measure revenue</h3><p>We follow the path from inquiry to booked work and, where possible, the revenue it creates.</p></article>
+          <article className="process-row"><h3>Measure revenue</h3><p>We follow the path from inquiry to customer and, where possible, the revenue it creates.</p></article>
         </div>
       </section>
 
@@ -257,10 +257,11 @@ export default function Home() {
 
       <section className="fit wrap" id="fit">
         <div className="section-head fit-head">
-          <div><h2>Built for businesses where a new customer matters.</h2></div>
-          <p>We are intentionally not limited to one trade. The model works anywhere the customer journey can be improved and the resulting work can be measured.</p>
+          <div><h2>Built for local service businesses.</h2></div>
+          <p>We are intentionally not limited to one trade. The model can apply to businesses that serve customers directly and where the customer journey can be improved and measured.</p>
         </div>
         <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}</div>
+        <p className="fit-examples">Think mechanics, dentists, eye doctors, barbers, tailors, trades, and other local businesses where getting and keeping a customer matters.</p>
       </section>
 
       <section className="faq wrap">
@@ -270,7 +271,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta"><div className="wrap cta-inner"><h2>Find the next job you are losing.</h2><button className="button" onClick={() => setModal(true)}>Get your business reviewed</button></div></section>
+      <section className="cta"><div className="wrap cta-inner"><h2>Find the customers you are losing.</h2><button className="button" onClick={() => setModal(true)}>Get your business reviewed</button></div></section>
 
       <footer className="footer wrap">
         <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
