@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Market Method <onboarding@resend.dev>',
+        from: 'Market Method <leads@marketmethod.co>',
         to: ['damian@kovamediagroup.com'],
         reply_to: email,
         subject: `Market Method: New Lead: ${businessName}`,
