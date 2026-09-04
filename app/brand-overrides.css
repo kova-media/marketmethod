@@ -1,16 +1,6 @@
-.logo {
-  display: block;
-  width: 170px;
-  height: 58px;
-  overflow: hidden;
-  background: url('/logo.svg') left center / contain no-repeat;
-  font-size: 0;
-  line-height: 0;
-}
+.brand { display:flex; align-items:center; width:180px; height:auto; overflow:visible; background:none; }
+.brand img { display:block; width:100%; height:auto; max-width:100%; }
 
-@media (max-width: 800px) {
-  .logo {
-    width: 140px;
-    height: 48px;
-  }
+@media (max-width:800px) {
+  .brand { width:145px; }
 }
