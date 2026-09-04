@@ -87,7 +87,7 @@ export default function Home() {
   return (
     <main>
       <nav className="nav wrap" aria-label="Main navigation">
-        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
+        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
         <div className="nav-links">
           <a href="#system">The system</a>
           <a href="#process">How it works</a>
@@ -98,29 +98,31 @@ export default function Home() {
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
+          <p className="hero-kicker">Market Method</p>
           <h1>Turn more inquiries into booked jobs.</h1>
-          <p className="hero-sub">Market Method builds and operates the system between a customer finding your business and paying you.</p>
+          <p className="hero-sub">We build and operate the system that turns a customer finding your business into a customer paying you.</p>
           <div className="hero-actions">
             <button className="button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See the system</button>
             <button className="text-button" onClick={() => setModal(true)}>Apply to work with us</button>
           </div>
         </div>
-        <div className="hero-proof">
-          <div className="hero-proof-flow">
-            <span>Customer finds you</span>
-            <span>They reach out</span>
-            <span>They book</span>
-            <span>You get the job</span>
+        <div className="hero-gap">
+          <p className="hero-gap-label">THE GAP</p>
+          <p className="hero-gap-headline">A lead is not revenue.</p>
+          <div className="hero-gap-flow">
+            <div><strong>Inquiry</strong><span>Someone raises their hand.</span></div>
+            <div><strong>Response</strong><span>They get a useful next step.</span></div>
+            <div><strong>Booking</strong><span>The opportunity becomes work.</span></div>
+            <div><strong>Revenue</strong><span>The work gets measured.</span></div>
           </div>
-          <p className="hero-proof-note">Most businesses spend money getting the first step right. We focus on everything that happens after it.</p>
         </div>
       </section>
 
       <section className="statement">
         <div className="wrap statement-inner">
           <div className="statement-main">
-            <h2>Getting found is only the beginning.</h2>
-            <p>We work on what happens after the lead arrives.</p>
+            <h2>Most businesses work hard to get the lead. Then they leave the rest to chance.</h2>
+            <p>Market Method takes responsibility for the part that comes next.</p>
           </div>
           <div className="statement-points">
             <div><h3>Respond</h3><p>Make sure the inquiry gets a fast, useful response.</p></div>
@@ -132,8 +134,8 @@ export default function Home() {
 
       <section className="system wrap" id="system">
         <div className="section-head">
-          <div><h2>Everything between<br /><em>the lead and the job.</em></h2></div>
-          <p>We build the parts of the customer journey that determine whether demand turns into work.</p>
+          <div><h2>The pieces that turn demand into work.</h2></div>
+          <p>One connected system, built around the way your customers actually buy.</p>
         </div>
         <div className="system-list">
           {systems.map(([title, description]) => <article className="system-item" key={title}><h3>{title}</h3><p>{description}</p></article>)}
@@ -143,8 +145,8 @@ export default function Home() {
       <section className="journey">
         <div className="wrap journey-inner">
           <div className="journey-copy">
-            <h2>Find. Contact. Book. Return.</h2>
-            <p>Most lost revenue is not lost at the first click. It is lost in the steps that follow.</p>
+            <h2>Where the money gets lost.</h2>
+            <p>A customer can find you, contact you, and still never become a job. We build around those gaps.</p>
           </div>
           <div className="journey-path" aria-label="Customer journey from discovery to revenue">
             <div><strong>Find</strong><span>Someone discovers the business.</span></div>
@@ -175,7 +177,7 @@ export default function Home() {
 
       <section className="fit wrap" id="fit">
         <div className="section-head fit-head">
-          <div><h2>Local businesses where a new customer is worth something.</h2></div>
+          <div><h2>Built for businesses where a new customer matters.</h2></div>
           <p>We are intentionally not limited to one trade. The model works anywhere the customer journey can be improved and the resulting work can be measured.</p>
         </div>
         <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}</div>
@@ -188,12 +190,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta"><div className="wrap cta-inner"><h2>Let&apos;s see where the next job is getting lost.</h2><button className="button" onClick={() => setModal(true)}>Apply to work with us</button></div></section>
+      <section className="cta"><div className="wrap cta-inner"><h2>Find the next job you are losing.</h2><button className="button" onClick={() => setModal(true)}>Apply to work with us</button></div></section>
 
       <footer className="footer wrap">
-        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
+        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
         <p>Revenue infrastructure for local service businesses.</p>
-        <p>© 2026 Market Method</p>
+        <p>© 2026 Market Method, a division of Kova Media Group</p>
       </footer>
 
       {modal && <LeadModal onClose={() => setModal(false)} />}
