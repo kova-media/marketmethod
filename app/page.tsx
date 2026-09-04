@@ -169,23 +169,21 @@ export default function Home() {
       <section className="hero wrap" id="top">
         <div className="hero-copy">
           <p className="eyebrow">CUSTOMER ACQUISITION · FOLLOW-UP · RETENTION</p>
-          <h1>Turn more leads into customers. Turn more customers into repeat business.</h1>
+          <h1>Get more customers. Keep them coming back.</h1>
           <p className="hero-sub">Your website gets the customer in the door. Market Method helps you get more from every customer.</p>
-          <p className="hero-detail">We build the website and the systems behind it to capture customers, follow up with leads, keep customer relationships organized, and bring people back.</p>
           <div className="hero-actions">
             <button className="button" onClick={() => setModal(true)}>Get Started</button>
             <button className="text-button" onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}>See How It Works</button>
           </div>
         </div>
-        <div className="hero-system">
-          <div className="system-label">ONE CONNECTED SYSTEM</div>
-          <div className="system-flow">
-            <div><strong>Website</strong><span>Capture</span></div>
-            <div><strong>Lead</strong><span>Organize</span></div>
-            <div><strong>Follow-Up</strong><span>Nurture</span></div>
-            <div><strong>Customer</strong><span>Serve</span></div>
-            <div><strong>Retention</strong><span>Return</span></div>
-          </div>
+        <div className="hero-visual" aria-hidden="true">
+          <div className="hero-visual-head"><span>THE CUSTOMER JOURNEY</span><span>GET → KEEP</span></div>
+          <div className="hero-word">GET</div>
+          <div className="hero-visual-label">NEW CUSTOMER</div>
+          <div className="hero-rule" />
+          <div className="hero-word hero-word-keep">KEEP</div>
+          <div className="hero-visual-label">RETURNING CUSTOMER</div>
+          <div className="hero-visual-foot"><span>WEBSITE</span><span>FOLLOW-UP</span><span>RETENTION</span></div>
         </div>
       </section>
 
@@ -210,11 +208,11 @@ export default function Home() {
           <p>The website, customer records, follow-up, retention, and communication are connected instead of living in separate tools and processes.</p>
         </div>
         <div className="system-journey">
-          <div><span>01</span><strong>Website</strong><small>Customer finds you</small></div>
-          <div><span>02</span><strong>Lead</strong><small>They reach out</small></div>
-          <div><span>03</span><strong>Follow-Up</strong><small>Stay in the conversation</small></div>
-          <div><span>04</span><strong>Customer</strong><small>Book or buy</small></div>
-          <div><span>05</span><strong>Retention</strong><small>Come back again</small></div>
+          <div><span>1</span><strong>Website</strong><small>Customer finds you</small></div>
+          <div><span>2</span><strong>Lead</strong><small>They reach out</small></div>
+          <div><span>3</span><strong>Follow-Up</strong><small>Stay in the conversation</small></div>
+          <div><span>4</span><strong>Customer</strong><small>Book or buy</small></div>
+          <div><span>5</span><strong>Retention</strong><small>Come back again</small></div>
         </div>
       </section>
 
@@ -227,7 +225,7 @@ export default function Home() {
           <div className="offer-grid">
             {systems.map(([title, description], index) => (
               <article className="offer-card" key={title}>
-                <span className="offer-number">0{index + 1}</span>
+                <span className="offer-number">{index + 1}</span>
                 <h3>{title}</h3>
                 <p>{description}</p>
               </article>
@@ -242,10 +240,10 @@ export default function Home() {
           <h2>Simple for you. Connected behind the scenes.</h2>
         </div>
         <div className="process-list">
-          <article className="process-row"><span>01</span><div><h3>We build your system.</h3><p>We set up the website and the customer systems around the parts of your business that need the most attention.</p></div></article>
-          <article className="process-row"><span>02</span><div><h3>Customers contact your business.</h3><p>Calls, forms, quote requests, appointments, and other customer inquiries flow into the system.</p></div></article>
-          <article className="process-row"><span>03</span><div><h3>Market Method follows up.</h3><p>Leads get timely follow-up instead of disappearing because nobody had time to chase them.</p></div></article>
-          <article className="process-row"><span>04</span><div><h3>You close the business and serve the customer.</h3><p>The system keeps the relationship organized and creates opportunities to bring the customer back.</p></div></article>
+          <article className="process-row"><span>1</span><div><h3>We build your system.</h3><p>We set up the website and the customer systems around the parts of your business that need the most attention.</p></div></article>
+          <article className="process-row"><span>2</span><div><h3>Customers contact your business.</h3><p>Calls, forms, quote requests, appointments, and other customer inquiries flow into the system.</p></div></article>
+          <article className="process-row"><span>3</span><div><h3>Market Method follows up.</h3><p>Leads get timely follow-up instead of disappearing because nobody had time to chase them.</p></div></article>
+          <article className="process-row"><span>4</span><div><h3>You close the business and serve the customer.</h3><p>The system keeps the relationship organized and creates opportunities to bring the customer back.</p></div></article>
         </div>
       </section>
 
@@ -289,7 +287,7 @@ export default function Home() {
           <div><p className="eyebrow">WHO IT&apos;S FOR</p><h2>Built for local businesses where every customer matters.</h2></div>
           <p>Especially useful for businesses that depend on appointments, quotes, repeat service, or ongoing customer relationships.</p>
         </div>
-        <div className="industry-list">{industries.map((industry, index) => <div key={industry}><span>0{index + 1}</span><h3>{industry}</h3></div>)}</div>
+        <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3><span>Built around the customer relationship</span></div>)}</div>
       </section>
 
       <section className="outcome section-dark">
