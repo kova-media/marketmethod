@@ -1,0 +1,14 @@
+.eyebrow,
+.hero-note > p {
+  display: none !important;
+}
+
+.hero-copy h1,
+.section-head h2,
+.journey-copy h2,
+.process-intro h2,
+.risk h2,
+.faq h2,
+.cta h2 {
+  margin-top: 0;
+}
