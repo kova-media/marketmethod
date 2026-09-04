@@ -22,6 +22,15 @@ const faqs = [
   ['How do you measure results?', 'We start with the inquiry and follow the customer journey through booking and, where the data is available, the completed job and resulting revenue.'],
 ]
 
+const improvementOptions = [
+  'Get more leads',
+  'Get more calls',
+  'Turn more leads into jobs',
+  'Follow up with leads',
+  'Get more repeat customers',
+  'Improve the website',
+]
+
 function LeadModal({ onClose }: { onClose: () => void }) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
@@ -32,11 +41,23 @@ function LeadModal({ onClose }: { onClose: () => void }) {
     setError('')
     const form = event.currentTarget
     const data = new FormData(form)
+    const selectedImprovements = data.getAll('improvements')
+    const payload = {
+      name: String(data.get('name') || ''),
+      email: String(data.get('email') || ''),
+      phone: String(data.get('phone') || ''),
+      businessName: String(data.get('businessName') || ''),
+      website: String(data.get('website') || ''),
+      improvements: selectedImprovements.join(', '),
+      message: String(data.get('message') || ''),
+      company: String(data.get('company') || ''),
+    }
+
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(data.entries())),
+        body: JSON.stringify(payload),
       })
       if (!response.ok) {
         const result = await response.json().catch(() => null)
@@ -56,27 +77,85 @@ function LeadModal({ onClose }: { onClose: () => void }) {
         <button className="close" onClick={onClose} aria-label="Close">Close</button>
         {status === 'success' ? (
           <div className="form-success">
+            <p className="form-kicker">REQUEST RECEIVED</p>
             <h2>We got it.</h2>
-            <p>Your information has been sent. We will be in touch.</p>
+            <p>Your information has been sent. We will review what you shared and be in touch.</p>
             <button className="button" onClick={onClose}>Done</button>
           </div>
         ) : (
           <>
-            <h2>Let&apos;s look at where the money is getting lost.</h2>
-            <p className="modal-intro">Tell us about the business and what happens when a customer reaches out.</p>
+            <p className="form-kicker">BUSINESS REVIEW</p>
+            <h2>Let&apos;s find where your business can improve.</h2>
+            <p className="modal-intro">A few details about the business and what you want to improve. We&apos;ll use them to understand where to look.</p>
             <form onSubmit={submitLead}>
-              <input required name="name" placeholder="Your name" aria-label="Your name" />
-              <input required name="email" type="email" placeholder="Email address" aria-label="Email address" />
-              <input required name="businessName" placeholder="Business name" aria-label="Business name" />
-              <input name="website" placeholder="Website URL" aria-label="Website URL" />
-              <textarea name="message" placeholder="What would you like to improve?" rows={4} aria-label="What would you like to improve?" />
-              <button className="button" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending...' : 'Request a look'}</button>
+              <div className="form-grid">
+                <input required name="name" placeholder="Your name *" aria-label="Your name" autoComplete="name" />
+                <input required name="email" type="email" placeholder="Email address *" aria-label="Email address" autoComplete="email" />
+              </div>
+              <div className="form-grid">
+                <input name="phone" type="tel" placeholder="Phone number" aria-label="Phone number" autoComplete="tel" />
+                <input required name="businessName" placeholder="Business name *" aria-label="Business name" autoComplete="organization" />
+              </div>
+              <input name="website" placeholder="Website URL" aria-label="Website URL" autoComplete="url" />
+
+              <fieldset className="improvement-fieldset">
+                <legend>What would you like to improve?</legend>
+                <div className="improvement-grid">
+                  {improvementOptions.map((option) => (
+                    <label key={option} className="check-option">
+                      <input type="checkbox" name="improvements" value={option} />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
+              <textarea name="message" placeholder="Anything else we should know?" rows={3} aria-label="Anything else we should know?" />
+
+              <input className="honeypot" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+              <button className="button form-submit" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending...' : 'Request a business review'}</button>
+              <p className="form-note">No commitment required to submit a request.</p>
               {status === 'error' && <p className="form-error">{error}</p>}
             </form>
           </>
         )}
       </div>
     </div>
+  )
+}
+
+function RevenueCalculator() {
+  const [averageJob, setAverageJob] = useState(500)
+  const [leads, setLeads] = useState(40)
+  const [closeRate, setCloseRate] = useState(25)
+  const [targetRate, setTargetRate] = useState(35)
+
+  const currentRevenue = Math.round(averageJob * leads * (closeRate / 100))
+  const targetRevenue = Math.round(averageJob * leads * (targetRate / 100))
+  const difference = Math.max(0, targetRevenue - currentRevenue)
+
+  return (
+    <section className="calculator">
+      <div className="wrap calculator-grid">
+        <div className="calculator-copy">
+          <h2>See what a better conversion rate could be worth.</h2>
+          <p>This is a planning tool, not a forecast. Change the assumptions to see the difference between your current conversion rate and a higher one.</p>
+        </div>
+        <div className="calculator-box">
+          <div className="calc-inputs">
+            <label>Average job value <span>${averageJob.toLocaleString()}</span><input type="range" min="50" max="5000" step="50" value={averageJob} onChange={(e) => setAverageJob(Number(e.target.value))} /></label>
+            <label>Leads per month <span>{leads}</span><input type="range" min="5" max="200" step="5" value={leads} onChange={(e) => setLeads(Number(e.target.value))} /></label>
+            <label>Current close rate <span>{closeRate}%</span><input type="range" min="1" max="80" value={closeRate} onChange={(e) => setCloseRate(Number(e.target.value))} /></label>
+            <label>Comparison close rate <span>{targetRate}%</span><input type="range" min="1" max="80" value={targetRate} onChange={(e) => setTargetRate(Number(e.target.value))} /></label>
+          </div>
+          <div className="calc-results">
+            <div><span>Current monthly revenue</span><strong>${currentRevenue.toLocaleString()}</strong></div>
+            <div><span>At {targetRate}% close rate</span><strong>${targetRevenue.toLocaleString()}</strong></div>
+            <div className="calc-difference"><span>Difference</span><strong>${difference.toLocaleString()}</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -93,7 +172,7 @@ export default function Home() {
           <a href="#process">How it works</a>
           <a href="#fit">Who it&apos;s for</a>
         </div>
-        <button className="button nav-cta" onClick={() => setModal(true)}>Apply to work with us</button>
+        <button className="button nav-cta" onClick={() => setModal(true)}>Get your business reviewed</button>
       </nav>
 
       <section className="hero wrap" id="top">
@@ -101,8 +180,8 @@ export default function Home() {
           <h1>Turn more inquiries into booked jobs.</h1>
           <p className="hero-sub">We build and operate the system that turns a customer finding your business into a customer paying you.</p>
           <div className="hero-actions">
-            <button className="button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See the system</button>
-            <button className="text-button" onClick={() => setModal(true)}>Apply to work with us</button>
+            <button className="button" onClick={() => setModal(true)}>Get your business reviewed</button>
+            <button className="text-button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See what we build</button>
           </div>
         </div>
         <div className="hero-gap">
@@ -140,6 +219,8 @@ export default function Home() {
           {systems.map(([title, description]) => <article className="system-item" key={title}><h3>{title}</h3><p>{description}</p></article>)}
         </div>
       </section>
+
+      <RevenueCalculator />
 
       <section className="journey">
         <div className="wrap journey-inner">
@@ -189,7 +270,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta"><div className="wrap cta-inner"><h2>Find the next job you are losing.</h2><button className="button" onClick={() => setModal(true)}>Apply to work with us</button></div></section>
+      <section className="cta"><div className="wrap cta-inner"><h2>Find the next job you are losing.</h2><button className="button" onClick={() => setModal(true)}>Get your business reviewed</button></div></section>
 
       <footer className="footer wrap">
         <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
