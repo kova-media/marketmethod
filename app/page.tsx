@@ -166,7 +166,7 @@ export default function Home() {
   return (
     <main>
       <nav className="nav wrap" aria-label="Main navigation">
-        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
+        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
         <div className="nav-links">
           <a href="#system">The system</a>
           <a href="#process">How it works</a>
@@ -274,7 +274,7 @@ export default function Home() {
       <section className="cta"><div className="wrap cta-inner"><h2>Find the customers you are losing.</h2><button className="button" onClick={() => setModal(true)}>Get your business reviewed</button></div></section>
 
       <footer className="footer wrap">
-        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo-clean.svg" alt="Market Method" /></a>
+        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
         <p>Revenue infrastructure for local service businesses.</p>
         <p>© 2026 Market Method, a division of Kova Media Group</p>
       </footer>
