@@ -2,16 +2,6 @@
 
 import { FormEvent, useState } from 'react'
 
-const systems = [
-  ['Website', 'Turn visitors into leads.'],
-  ['CRM', 'Know who your customers are and what happens next.'],
-  ['Lead Nurture', "Follow up automatically when a lead doesn't respond."],
-  ['Customer Retention', 'Bring customers back before they forget about you.'],
-  ['Customer Service', 'Handle routine questions and requests automatically.'],
-]
-
-const industries = ['Home Services', 'Cleaning', 'Auto Services', 'Dental', 'Beauty & Personal Care', 'Professional Services']
-
 const faqs = [
   ['Is Market Method a web design company?', 'No. The website is one part of a larger customer acquisition, follow-up, and retention system. It is the front door to the system, not the whole product.'],
   ['What does the system include?', 'Market Method connects your website, CRM, lead follow-up, customer retention, and customer communication into one operating system for the business.'],
@@ -168,133 +158,96 @@ export default function Home() {
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">CUSTOMER ACQUISITION · FOLLOW-UP · RETENTION</p>
-          <h1>Get more customers. Keep them coming back.</h1>
-          <p className="hero-sub">Your website gets the customer in the door. Market Method helps you get more from every customer.</p>
+          <p className="eyebrow">FOR LOCAL BUSINESSES</p>
+          <h1>Get the customer. Keep the customer.</h1>
+          <p className="hero-sub">Market Method connects your website, follow-up, customer records, and retention into one system built around the customer relationship.</p>
           <div className="hero-actions">
             <button className="button" onClick={() => setModal(true)}>Get Started</button>
-            <button className="text-button" onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}>See How It Works</button>
+            <button className="text-button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See the System</button>
           </div>
         </div>
         <div className="hero-visual" aria-hidden="true">
-          <div className="hero-visual-head"><span>THE CUSTOMER JOURNEY</span><span>GET → KEEP</span></div>
-          <div className="hero-word">GET</div>
-          <div className="hero-visual-label">NEW CUSTOMER</div>
-          <div className="hero-rule" />
-          <div className="hero-word hero-word-keep">KEEP</div>
-          <div className="hero-visual-label">RETURNING CUSTOMER</div>
-          <div className="hero-visual-foot"><span>WEBSITE</span><span>FOLLOW-UP</span><span>RETENTION</span></div>
+          <div className="hero-visual-top"><span>THE CUSTOMER LIFECYCLE</span><span>01—05</span></div>
+          <div className="hero-cycle">
+            <div className="cycle-node cycle-primary"><span>01</span><strong>Find</strong><small>Website</small></div>
+            <div className="cycle-line" />
+            <div className="cycle-node"><span>02</span><strong>Reach</strong><small>Lead</small></div>
+            <div className="cycle-line" />
+            <div className="cycle-node"><span>03</span><strong>Follow</strong><small>Conversation</small></div>
+            <div className="cycle-line" />
+            <div className="cycle-node"><span>04</span><strong>Convert</strong><small>Customer</small></div>
+            <div className="cycle-line" />
+            <div className="cycle-node cycle-last"><span>05</span><strong>Return</strong><small>Retention</small></div>
+          </div>
+          <div className="hero-visual-bottom"><strong>GET</strong><span>→</span><strong>KEEP</strong></div>
         </div>
       </section>
 
-      <section className="problem section-dark">
-        <div className="wrap problem-inner">
-          <div className="problem-copy">
-            <p className="eyebrow dark">THE PROBLEM</p>
-            <h2>A customer reaches out. Then the process breaks down.</h2>
+      <section className="leak-section section-dark">
+        <div className="wrap leak-inner">
+          <div className="leak-head">
+            <p className="eyebrow dark">WHERE REVENUE LEAKS</p>
+            <h2>Most businesses don&apos;t have one big problem. They have gaps.</h2>
           </div>
-          <div className="problem-list">
-            <div><strong>They call.</strong><span>No one gets back to them.</span></div>
-            <div><strong>They ask for a quote.</strong><span>The follow-up gets forgotten.</span></div>
-            <div><strong>They become a customer.</strong><span>Nothing brings them back.</span></div>
-            <div><strong>The owner gets busy.</strong><span>Every message becomes another task.</span></div>
+          <div className="leak-statement">
+            <div className="leak-row"><span>01</span><strong>A lead asks for a quote.</strong><em>Then waits.</em></div>
+            <div className="leak-row"><span>02</span><strong>A customer finishes a job.</strong><em>Then hears nothing.</em></div>
+            <div className="leak-row"><span>03</span><strong>A past customer needs you again.</strong><em>But nobody reaches out.</em></div>
+            <div className="leak-row"><span>04</span><strong>The owner gets busy.</strong><em>The follow-up becomes another task.</em></div>
           </div>
         </div>
       </section>
 
       <section className="system-section wrap" id="system">
-        <div className="section-head">
-          <div><p className="eyebrow">ONE SYSTEM</p><h2>Every part works together.</h2></div>
-          <p>The website, customer records, follow-up, retention, and communication are connected instead of living in separate tools and processes.</p>
-        </div>
-        <div className="system-journey">
-          <div><span>1</span><strong>Website</strong><small>Customer finds you</small></div>
-          <div><span>2</span><strong>Lead</strong><small>They reach out</small></div>
-          <div><span>3</span><strong>Follow-Up</strong><small>Stay in the conversation</small></div>
-          <div><span>4</span><strong>Customer</strong><small>Book or buy</small></div>
-          <div><span>5</span><strong>Retention</strong><small>Come back again</small></div>
-        </div>
-      </section>
-
-      <section className="offer section-stone">
-        <div className="wrap">
-          <div className="section-head">
-            <div><p className="eyebrow">WHAT MARKET METHOD DOES</p><h2>The infrastructure behind the customer.</h2></div>
-            <p>Five connected pieces built around the way local businesses actually acquire and keep customers.</p>
+        <div className="system-intro">
+          <div>
+            <p className="eyebrow">ONE CONNECTED SYSTEM</p>
+            <h2>One customer. One relationship. One place to manage it.</h2>
           </div>
-          <div className="offer-grid">
-            {systems.map(([title, description], index) => (
-              <article className="offer-card" key={title}>
-                <span className="offer-number">{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </article>
-            ))}
+          <p>Instead of stitching together a website, inbox, spreadsheet, reminders, and separate marketing tools, Market Method connects the parts that matter.</p>
+        </div>
+        <div className="lifecycle">
+          <div className="lifecycle-track" />
+          <article><span>01</span><strong>Attract</strong><p>Your website gives the right customer a clear reason to contact you.</p></article>
+          <article><span>02</span><strong>Capture</strong><p>New inquiries become organized customer records instead of disappearing into an inbox.</p></article>
+          <article><span>03</span><strong>Follow up</strong><p>The system keeps conversations moving when the customer does not respond right away.</p></article>
+          <article><span>04</span><strong>Retain</strong><p>After the sale, reminders and follow-up create reasons to come back.</p></article>
+        </div>
+      </section>
+
+      <section className="control-section section-stone">
+        <div className="wrap control-grid">
+          <div className="control-copy">
+            <p className="eyebrow">THE OWNER VIEW</p>
+            <h2>Know what is happening without chasing it down.</h2>
+            <p>A simple customer system gives you a clear view of what needs attention today, what is coming next, and which customers are ready for another conversation.</p>
+            <div className="control-points"><span>New leads</span><span>Follow-ups due</span><span>Appointments</span><span>Open conversations</span><span>Customers to re-engage</span></div>
           </div>
-        </div>
-      </section>
-
-      <section className="process wrap" id="process">
-        <div className="process-intro">
-          <p className="eyebrow">HOW IT WORKS</p>
-          <h2>Simple for you. Connected behind the scenes.</h2>
-        </div>
-        <div className="process-list">
-          <article className="process-row"><span>1</span><div><h3>We build your system.</h3><p>We set up the website and the customer systems around the parts of your business that need the most attention.</p></div></article>
-          <article className="process-row"><span>2</span><div><h3>Customers contact your business.</h3><p>Calls, forms, quote requests, appointments, and other customer inquiries flow into the system.</p></div></article>
-          <article className="process-row"><span>3</span><div><h3>Market Method follows up.</h3><p>Leads get timely follow-up instead of disappearing because nobody had time to chase them.</p></div></article>
-          <article className="process-row"><span>4</span><div><h3>You close the business and serve the customer.</h3><p>The system keeps the relationship organized and creates opportunities to bring the customer back.</p></div></article>
-        </div>
-      </section>
-
-      <section className="website-section section-dark">
-        <div className="wrap feature-grid">
-          <div><p className="eyebrow dark">THE WEBSITE</p><h2>Your website is the front door.</h2><p className="feature-copy">We build a modern, conversion-focused website that makes it easy for the right customer to contact you. It connects directly to the rest of the Market Method system.</p></div>
-          <div className="feature-points"><div><strong>Clear</strong><span>Customers understand what you do and what to do next.</span></div><div><strong>Focused</strong><span>Calls, forms, quote requests, and bookings have a clear path.</span></div><div><strong>Connected</strong><span>New inquiries move into the customer system instead of stopping at the website.</span></div></div>
-        </div>
-      </section>
-
-      <section className="crm-section wrap">
-        <div className="feature-grid crm-grid">
-          <div><p className="eyebrow">CRM + AUTOMATION</p><h2>Know what needs attention.</h2><p className="feature-copy">A simple owner-facing system keeps leads, customers, appointments, conversations, and follow-ups organized in one place.</p></div>
           <DashboardPreview />
         </div>
       </section>
 
-      <section className="retention section-stone">
-        <div className="wrap feature-grid">
-          <div><p className="eyebrow">RETENTION</p><h2>Getting the customer is only part of the job.</h2><p className="feature-copy">Market Method can automate the routine communication that keeps the relationship moving.</p></div>
-          <div className="retention-list">
-            <div><strong>After-service follow-up</strong><span>Check in after the job and keep the relationship active.</span></div>
-            <div><strong>Appointment reminders</strong><span>Help customers remember what they already scheduled.</span></div>
-            <div><strong>Review requests</strong><span>Ask satisfied customers for feedback at the right time.</span></div>
-            <div><strong>Repeat-service reminders</strong><span>Reach out when another service is likely to be due.</span></div>
-            <div><strong>Reactivation</strong><span>Bring back customers who have gone quiet.</span></div>
-            <div><strong>Promotional campaigns</strong><span>Give existing customers another reason to buy.</span></div>
+      <section className="retention-section section-dark">
+        <div className="wrap retention-inner">
+          <div className="retention-statement">
+            <p className="eyebrow dark">AFTER THE SALE</p>
+            <h2>The job ends. The relationship doesn&apos;t.</h2>
+            <p>Market Method handles the routine moments that are easy to forget when you are busy serving customers.</p>
+          </div>
+          <div className="retention-sequence">
+            <div><span>AFTER SERVICE</span><strong>Check in.</strong><p>Keep the relationship active.</p></div>
+            <div><span>WHEN IT&apos;S DUE</span><strong>Remind them.</strong><p>Make the next service easier to schedule.</p></div>
+            <div><span>WHEN THEY GO QUIET</span><strong>Reach out.</strong><p>Give past customers a reason to come back.</p></div>
           </div>
         </div>
       </section>
 
-      <section className="service section-dark">
-        <div className="wrap feature-grid">
-          <div><p className="eyebrow dark">AUTOMATED CUSTOMER SERVICE</p><h2>Let the system handle the routine.</h2><p className="feature-copy">We are building toward automated phone and email customer service that can answer common questions, collect information, handle routine requests, book appointments, and hand complicated situations to a real person.</p><span className="capability-note">AN EVOLVING CAPABILITY</span></div>
-          <div className="service-flow"><div><span>Customer calls or emails</span><strong>Common question?</strong></div><div><span>System handles the routine</span><strong>Collects information</strong></div><div><span>Booking or next step</span><strong>Moves the customer forward</strong></div><div><span>Something complex?</span><strong>Hands it to a person</strong></div></div>
+      <section className="fit-section wrap" id="fit">
+        <div className="fit-banner">
+          <div><p className="eyebrow">BUILT FOR THE WAY LOCAL BUSINESS WORKS</p><h2>When a customer matters beyond the first sale, this matters.</h2></div>
+          <p>Market Method fits businesses built on calls, quotes, appointments, repeat service, and customer relationships.</p>
         </div>
-      </section>
-
-      <section className="fit wrap" id="fit">
-        <div className="section-head fit-head">
-          <div><p className="eyebrow">WHO IT&apos;S FOR</p><h2>Built for local businesses where every customer matters.</h2></div>
-          <p>Especially useful for businesses that depend on appointments, quotes, repeat service, or ongoing customer relationships.</p>
-        </div>
-        <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3><span>Built around the customer relationship</span></div>)}</div>
-      </section>
-
-      <section className="outcome section-dark">
-        <div className="wrap outcome-inner">
-          <div><p className="eyebrow dark">THE OUTCOME</p><h2>Stop losing customers between the cracks.</h2></div>
-          <div className="outcome-points"><p>Capture more leads.</p><p>Follow up faster.</p><p>Stay organized.</p><p>Bring customers back.</p><p>Spend less time answering the same questions.</p></div>
-        </div>
+        <div className="fit-strip"><span>HOME SERVICES</span><span>CLEANING</span><span>AUTO SERVICES</span><span>DENTAL</span><span>BEAUTY</span><span>PROFESSIONAL SERVICES</span></div>
       </section>
 
       <section className="faq wrap">
@@ -304,7 +257,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta"><div className="wrap cta-inner"><p className="eyebrow">GET STARTED</p><h2>Build a better customer system.</h2><p>Start with the website. Build from there.</p><button className="button" onClick={() => setModal(true)}>Get Started</button></div></section>
+      <section className="cta"><div className="wrap cta-inner"><div className="cta-mark">GET → KEEP</div><h2>Build the system behind the customer.</h2><p>Start with what is missing. Build from there.</p><button className="button" onClick={() => setModal(true)}>Get Started</button></div></section>
 
       <footer className="footer wrap">
         <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
