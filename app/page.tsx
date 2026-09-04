@@ -155,19 +155,14 @@ export default function Home() {
       <section className="hero wrap" id="top">
         <div className="hero-copy">
           <p className="eyebrow">FOR LOCAL BUSINESSES</p>
-          <h1>Get the customer.<br />Keep the customer.</h1>
-          <p className="hero-sub">Market Method connects the website, lead follow-up, customer records, and retention that keep a customer relationship moving.</p>
-          <div className="hero-actions">
-            <button className="button" onClick={() => setModal(true)}>Get Started</button>
-            <button className="text-button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See how it works</button>
+          <h1>Turn interest into business.<br />Turn customers into repeat business.</h1>
+          <div className="hero-bottom">
+            <p className="hero-sub">Market Method connects the website, lead follow-up, customer records, and retention that keep a customer relationship moving.</p>
+            <div className="hero-actions">
+              <button className="button" onClick={() => setModal(true)}>Get Started</button>
+              <button className="text-button" onClick={() => document.getElementById('system')?.scrollIntoView({ behavior: 'smooth' })}>See how it works</button>
+            </div>
           </div>
-        </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="hero-visual-label">THE CUSTOMER RELATIONSHIP</div>
-          <div className="hero-visual-word hero-word-get">GET</div>
-          <div className="hero-visual-rule"><span>→</span></div>
-          <div className="hero-visual-word hero-word-keep">KEEP</div>
-          <div className="hero-visual-note">From first contact to the next reason to come back.</div>
         </div>
       </section>
 
@@ -237,7 +232,6 @@ export default function Home() {
 
       <section className="cta">
         <div className="wrap cta-inner">
-          <div className="cta-mark">GET → KEEP</div>
           <h2>Stop losing customers between the cracks.</h2>
           <p>Tell us where the customer journey breaks down. We&apos;ll start there.</p>
           <button className="button" onClick={() => setModal(true)}>Get Started</button>
