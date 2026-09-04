@@ -1,0 +1,16 @@
+.logo {
+  display: block;
+  width: 170px;
+  height: 58px;
+  overflow: hidden;
+  background: url('/logo.svg') left center / contain no-repeat;
+  font-size: 0;
+  line-height: 0;
+}
+
+@media (max-width: 800px) {
+  .logo {
+    width: 140px;
+    height: 48px;
+  }
+}
