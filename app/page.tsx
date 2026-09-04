@@ -13,13 +13,7 @@ const systems = [
   ['Revenue tracking', 'Connect leads and bookings to the work they create.'],
 ]
 
-const industries = [
-  'Home services',
-  'Professional services',
-  'Health & wellness',
-  'Automotive',
-  'Local specialty businesses',
-]
+const industries = ['Home services', 'Professional services', 'Health & wellness', 'Automotive', 'Local specialty businesses']
 
 const faqs = [
   ['Is Market Method a marketing agency?', 'Not in the traditional sense. We focus on what happens after someone finds your business: contacting you, getting a response, booking, returning, and becoming revenue.'],
@@ -36,22 +30,18 @@ function LeadModal({ onClose }: { onClose: () => void }) {
     event.preventDefault()
     setStatus('sending')
     setError('')
-
     const form = event.currentTarget
     const data = new FormData(form)
-
     try {
       const response = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(Object.fromEntries(data.entries())),
       })
-
       if (!response.ok) {
         const result = await response.json().catch(() => null)
         throw new Error(result?.error || 'Something went wrong. Please try again.')
       }
-
       setStatus('success')
       form.reset()
     } catch (err) {
@@ -68,7 +58,7 @@ function LeadModal({ onClose }: { onClose: () => void }) {
           <div className="form-success">
             <h2>We got it.</h2>
             <p>Your information has been sent. We will be in touch.</p>
-            <button className="button button-dark" onClick={onClose}>Done</button>
+            <button className="button" onClick={onClose}>Done</button>
           </div>
         ) : (
           <>
@@ -80,9 +70,7 @@ function LeadModal({ onClose }: { onClose: () => void }) {
               <input required name="businessName" placeholder="Business name" aria-label="Business name" />
               <input name="website" placeholder="Website URL" aria-label="Website URL" />
               <textarea name="message" placeholder="What would you like to improve?" rows={4} aria-label="What would you like to improve?" />
-              <button className="button button-dark" type="submit" disabled={status === 'sending'}>
-                {status === 'sending' ? 'Sending...' : 'Request a look'}
-              </button>
+              <button className="button" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending...' : 'Request a look'}</button>
               {status === 'error' && <p className="form-error">{error}</p>}
             </form>
           </>
@@ -99,7 +87,7 @@ export default function Home() {
   return (
     <main>
       <nav className="nav wrap" aria-label="Main navigation">
-        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo.svg" alt="Market Method" /></a>
+        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
         <div className="nav-links">
           <a href="#system">The system</a>
           <a href="#process">How it works</a>
@@ -118,7 +106,6 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-proof">
-          <p className="hero-proof-title">The gap we work on</p>
           <div className="hero-proof-flow">
             <span>Customer finds you</span>
             <span>They reach out</span>
@@ -149,12 +136,7 @@ export default function Home() {
           <p>We build the parts of the customer journey that determine whether demand turns into work.</p>
         </div>
         <div className="system-list">
-          {systems.map(([title, description]) => (
-            <article className="system-item" key={title}>
-              <h3>{title}</h3>
-              <p>{description}</p>
-            </article>
-          ))}
+          {systems.map(([title, description]) => <article className="system-item" key={title}><h3>{title}</h3><p>{description}</p></article>)}
         </div>
       </section>
 
@@ -187,10 +169,7 @@ export default function Home() {
       <section className="risk">
         <div className="wrap risk-grid">
           <div><h2>Our incentives should look more like yours.</h2></div>
-          <div>
-            <p className="risk-big">We can put more of our compensation at risk.</p>
-            <p className="muted">Depending on the business, that can mean little or no upfront cost, with Market Method participating in the upside when the system produces additional revenue.</p>
-          </div>
+          <div><p className="risk-big">We can put more of our compensation at risk.</p><p className="muted">Depending on the business, that can mean little or no upfront cost, with Market Method participating in the upside when the system produces additional revenue.</p></div>
         </div>
       </section>
 
@@ -199,34 +178,20 @@ export default function Home() {
           <div><h2>Local businesses where a new customer is worth something.</h2></div>
           <p>We are intentionally not limited to one trade. The model works anywhere the customer journey can be improved and the resulting work can be measured.</p>
         </div>
-        <div className="industry-list">
-          {industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}
-        </div>
+        <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}</div>
       </section>
 
       <section className="faq wrap">
         <div><h2>Before we talk numbers.</h2></div>
         <div className="faq-list">
-          {faqs.map(([question, answer], index) => (
-            <div className="faq-row" key={question}>
-              <button onClick={() => setOpen(open === index ? null : index)} aria-expanded={open === index}>
-                <span>{question}</span><span className="faq-mark">{open === index ? '−' : '+'}</span>
-              </button>
-              {open === index && <p>{answer}</p>}
-            </div>
-          ))}
+          {faqs.map(([question, answer], index) => <div className="faq-row" key={question}><button onClick={() => setOpen(open === index ? null : index)} aria-expanded={open === index}><span>{question}</span><span className="faq-mark">{open === index ? '−' : '+'}</span></button>{open === index && <p>{answer}</p>}</div>)}
         </div>
       </section>
 
-      <section className="cta">
-        <div className="wrap cta-inner">
-          <h2>Let&apos;s see where the next job is getting lost.</h2>
-          <button className="button" onClick={() => setModal(true)}>Apply to work with us</button>
-        </div>
-      </section>
+      <section className="cta"><div className="wrap cta-inner"><h2>Let&apos;s see where the next job is getting lost.</h2><button className="button" onClick={() => setModal(true)}>Apply to work with us</button></div></section>
 
       <footer className="footer wrap">
-        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.svg" alt="Market Method" /></a>
+        <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
         <p>Revenue infrastructure for local service businesses.</p>
         <p>© 2026 Market Method</p>
       </footer>
