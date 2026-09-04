@@ -33,7 +33,6 @@ function LeadModal({ onClose }: { onClose: () => void }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(event) => event.stopPropagation()}>
         <button className="close" onClick={onClose} aria-label="Close">Close</button>
-        <p className="eyebrow">WORK WITH MARKET METHOD</p>
         <h2>Let&apos;s look at where the money is getting lost.</h2>
         <p className="modal-intro">Tell us about the business, the website, and what happens when a customer reaches out. We&apos;ll start there.</p>
         <form onSubmit={(event) => { event.preventDefault(); alert('Thanks. We will be in touch.') }}>
@@ -56,7 +55,7 @@ export default function Home() {
   return (
     <main>
       <nav className="nav wrap" aria-label="Main navigation">
-        <a href="#top" className="logo" aria-label="Market Method home">MARKET METHOD</a>
+        <a href="#top" className="brand" aria-label="Market Method home"><img src="/logo.svg" alt="Market Method" /></a>
         <div className="nav-links">
           <a href="#system">The system</a>
           <a href="#process">How it works</a>
@@ -67,7 +66,6 @@ export default function Home() {
 
       <section className="hero wrap" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">REVENUE INFRASTRUCTURE FOR LOCAL BUSINESS</p>
           <h1>More of the people who find you should become customers.</h1>
           <p className="hero-sub">Market Method builds and operates the website, lead capture, follow-up, scheduling, and customer reactivation systems that sit between demand and revenue.</p>
           <div className="hero-actions">
@@ -76,7 +74,6 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-note" aria-label="Market Method point of view">
-          <p>THE PROBLEM</p>
           <blockquote>Getting a lead is not the same thing as getting the job.</blockquote>
           <span>There are usually several steps between the first inquiry and the finished job. We work on those steps.</span>
         </div>
@@ -84,7 +81,6 @@ export default function Home() {
 
       <section className="statement">
         <div className="wrap statement-inner">
-          <p className="eyebrow statement-label">THE IDEA</p>
           <div>
             <p className="big-statement">You may not need more traffic. You may need a better system for handling the traffic you already have.</p>
             <p className="statement-support">A missed call, a slow reply, a difficult booking process, or an old customer who never hears from you again can all mean lost revenue.</p>
@@ -95,7 +91,6 @@ export default function Home() {
       <section className="system wrap" id="system">
         <div className="section-head">
           <div>
-            <p className="eyebrow">THE MARKET METHOD SYSTEM</p>
             <h2>One customer journey.<br /><em>One connected system.</em></h2>
           </div>
           <p>Instead of handing you another collection of marketing services, we work on the parts of the customer journey that determine whether demand turns into work.</p>
@@ -114,7 +109,6 @@ export default function Home() {
       <section className="journey">
         <div className="wrap journey-inner">
           <div className="journey-copy">
-            <p className="eyebrow">WHERE WE WORK</p>
             <h2>The gaps are usually between the obvious parts of the funnel.</h2>
             <p>A business can have a good website and still lose inquiries. It can generate calls and still miss jobs. It can have hundreds of past customers and never give them a reason to come back.</p>
           </div>
@@ -130,7 +124,6 @@ export default function Home() {
 
       <section className="process wrap" id="process">
         <div className="process-intro">
-          <p className="eyebrow">HOW IT WORKS</p>
           <h2>We find the weak points, then build around them.</h2>
         </div>
         <div className="process-list">
@@ -156,7 +149,6 @@ export default function Home() {
       <section className="risk">
         <div className="wrap risk-grid">
           <div>
-            <p className="eyebrow">OUR MODEL</p>
             <h2>Our incentives should look more like yours.</h2>
           </div>
           <div>
@@ -169,7 +161,6 @@ export default function Home() {
       <section className="fit wrap" id="fit">
         <div className="section-head fit-head">
           <div>
-            <p className="eyebrow">WHO IT&apos;S FOR</p>
             <h2>Local businesses where a new customer is worth something.</h2>
           </div>
           <p>We are intentionally not limited to one trade. The model works anywhere the customer journey can be improved and the resulting work can be measured.</p>
@@ -181,7 +172,6 @@ export default function Home() {
 
       <section className="faq wrap">
         <div>
-          <p className="eyebrow">COMMON QUESTIONS</p>
           <h2>Before we talk numbers.</h2>
         </div>
         <div className="faq-list">
@@ -199,14 +189,13 @@ export default function Home() {
 
       <section className="cta">
         <div className="wrap cta-inner">
-          <p className="eyebrow light">A BETTER SYSTEM STARTS WITH A LOOK AT THE CURRENT ONE</p>
           <h2>Let&apos;s see where the next job is getting lost.</h2>
           <button className="button button-light" onClick={() => setModal(true)}>Apply to work with us</button>
         </div>
       </section>
 
       <footer className="footer wrap">
-        <div className="logo">MARKET METHOD</div>
+        <div className="brand footer-brand"><img src="/logo.svg" alt="Market Method" /></div>
         <p>Revenue infrastructure for local service businesses.</p>
         <p>© 2026 Market Method</p>
       </footer>
