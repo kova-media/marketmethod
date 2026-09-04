@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true })
     }
 
-    if (!name || !email || !businessName) {
+    if (!name || !email || !phone || !businessName) {
       return NextResponse.json({ error: 'Please complete the required fields.' }, { status: 400 })
     }
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
         text: [
           `Name: ${name}`,
           `Email: ${email}`,
-          `Phone: ${phone || 'Not provided'}`,
+          `Phone: ${phone}`,
           `Business: ${businessName}`,
           `Website: ${website || 'Not provided'}`,
           `What they want to improve: ${improvements || 'Not specified'}`,
