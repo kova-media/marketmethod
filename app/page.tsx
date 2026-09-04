@@ -261,7 +261,6 @@ export default function Home() {
           <p>We are intentionally not limited to one trade. The model can apply to businesses that serve customers directly and where the customer journey can be improved and measured.</p>
         </div>
         <div className="industry-list">{industries.map((industry) => <div key={industry}><h3>{industry}</h3></div>)}</div>
-        <p className="fit-examples">Think mechanics, dentists, eye doctors, barbers, tailors, trades, and other local businesses where getting and keeping a customer matters.</p>
       </section>
 
       <section className="faq wrap">
