@@ -240,7 +240,7 @@ export default function Home() {
 
       <footer className="footer wrap">
         <a href="#top" className="brand footer-brand" aria-label="Market Method home"><img src="/logo.png" alt="Market Method" /></a>
-        <p>Customer acquisition, follow-up, and retention systems for local businesses.</p>
+        <p><a href="mailto:contact@marketmethod.co">contact@marketmethod.co</a></p>
         <p>© 2026 Market Method, a division of Kova Media Group</p>
       </footer>
 
