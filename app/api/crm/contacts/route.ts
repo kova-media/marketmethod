@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
 import { getSession } from '../../../../lib/auth'
 import { ensureSchema } from '../../../../lib/schema'
+import { runAutomations } from '../../../../lib/automation'
 
 export async function GET(){
  await ensureSchema()
