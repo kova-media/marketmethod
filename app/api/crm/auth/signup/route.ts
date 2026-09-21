@@ -34,8 +34,9 @@ export async function POST(request: NextRequest) {
 
     if (existingOrg[0]) {
       organizationId = existingOrg[0].id
+      if (isMarketMethod) await sql`update organizations set sender_name=coalesce(sender_name,'Market Method'),sender_email=coalesce(sender_email,'contact@marketmethod.co') where id=${organizationId}`
     } else {
-      const orgRows = await sql`insert into organizations(name,slug,industry,primary_color) values(${businessName},${slug},${body.industry?.trim() || null},'#C7ED63') returning id`
+      const orgRows = await sql`insert into organizations(name,slug,industry,primary_color,sender_name,sender_email) values(${businessName},${slug},${body.industry?.trim() || null},'#C7ED63',${isMarketMethod?'Market Method':null},${isMarketMethod?'contact@marketmethod.co':null}) returning id`
       organizationId = orgRows[0].id
     }
 
