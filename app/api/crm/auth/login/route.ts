@@ -1,3 +1,4 @@
+import { ensureSchema } from '../../../../../lib/schema'
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
 import { createSession, verifyPassword } from '../../../../lib/auth'
@@ -8,7 +9,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = body
     if (!email || !password) return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
 
-    const sql = getDb()
+    await ensureSchema()\n    const sql = getDb()
     const rows = await sql`
       select u.id, u.organization_id, u.email, u.name, u.role, u.password_hash, o.name as organization_name
       from users u
