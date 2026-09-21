@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getDb } from '../../../lib/db'
+import { ensureSchema } from '../../../lib/schema'
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +20,21 @@ export async function POST(request: Request) {
 
     if (!name || !email || !phone || !businessName) {
       return NextResponse.json({ error: 'Please complete the required fields.' }, { status: 400 })
+    }
+
+    try {
+      await ensureSchema()
+      const sql = getDb()
+      const orgRows = await sql\`select id from organizations where slug='market-method' limit 1\`
+      let organizationId = orgRows[0]?.id
+      if (!organizationId) {
+        const created = await sql\`insert into organizations(name,slug,industry,primary_color) values('Market Method','market-method','Local Business','#C7ED63') on conflict(slug) do update set name=excluded.name returning id\`
+        organizationId = created[0].id
+      }
+      const contactRows = await sql\`insert into contacts(organization_id,first_name,last_name,email,phone,company,source,status,notes) values(\${organizationId},\${name.split(' ')[0]},\${name.split(' ').slice(1).join(' ') || null},\${email},\${phone},\${businessName},'Website','new',\${[website,improvements,message].filter(Boolean).join('\\n\\n') || null}) returning id\`
+      await sql\`insert into activities(organization_id,contact_id,type,title,body) values(\${organizationId},\${contactRows[0].id},'lead_created','New website lead',\${'Lead submitted by '+name+' for '+businessName})\`
+    } catch {
+      // CRM persistence should never prevent the existing lead email from being delivered.
     }
 
     const apiKey = process.env.RESEND_API_KEY
