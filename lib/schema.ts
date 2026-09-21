@@ -25,6 +25,7 @@ const statements = [
   `create table if not exists service_history (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, contact_id uuid not null references contacts(id) on delete cascade, property_id uuid references properties(id) on delete cascade, service_date date not null default current_date, service_type text not null, amount numeric(12,2), notes text, next_recommended_date date, created_at timestamptz not null default now())`,
 ]
 
+  \`create table if not exists automation_events (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, automation_id uuid references automations(id) on delete cascade, contact_id uuid references contacts(id) on delete cascade, event_type text not null, status text not null default 'completed', details jsonb not null default '{}'::jsonb, created_at timestamptz not null default now())\`,
 let initialized = false
 
 export async function ensureSchema() {
