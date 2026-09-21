@@ -53,6 +53,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const automationCount = await sql`select count(*)::int as count from automations where organization_id=${organizationId}`
+    if (!automationCount[0]?.count) {
+      await sql`insert into automations(organization_id,name,trigger_type,conditions,actions,enabled) values(${organizationId},'New contact follow-up','contact_created','[]',${JSON.stringify([{ type: 'create_task', title: 'Follow up with new contact', dueAt: 1 }])},true)`
+    }
+
     await createSession(userRows[0].id, organizationId)
     return NextResponse.json({ user: userRows[0] }, { status: 201 })
   } catch (error) {
