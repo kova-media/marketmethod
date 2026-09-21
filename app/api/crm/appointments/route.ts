@@ -29,3 +29,14 @@ export async function POST(request:NextRequest){
   `
   return NextResponse.json({appointment:rows[0]},{status:201})
 }
+
+export async function PATCH(request:NextRequest){
+  const session=await getSession()
+  if(!session) return NextResponse.json({error:'Unauthorized'},{status:401})
+  const body=await request.json()
+  if(!body.id||!body.status) return NextResponse.json({error:'Appointment and status are required'},{status:400})
+  const sql=getDb()
+  const rows=await sql`update appointments set status=${body.status} where id=${body.id} and organization_id=${session.organizationId} returning *`
+  if(!rows[0]) return NextResponse.json({error:'Appointment not found'},{status:404})
+  return NextResponse.json({appointment:rows[0]})
+}
