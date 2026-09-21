@@ -33,7 +33,7 @@ export async function PATCH(request:NextRequest){
  const body=await request.json()
  if(!body.id) return NextResponse.json({error:'Contact id is required'},{status:400})
  const sql=getDb()
- const rows=await sql`update contacts set first_name=${body.firstName?.trim()||null},last_name=${body.lastName?.trim()||null},email=${body.email?.trim()||null},phone=${body.phone?.trim()||null},company=${body.company?.trim()||null},status=${body.status||'new'},notes=${body.notes?.trim()||null},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
+ const rows=await sql`update contacts set first_name=${body.firstName?.trim()||null},last_name=${body.lastName?.trim()||null},email=${body.email?.trim()||null},phone=${body.phone?.trim()||null},company=${body.company?.trim()||null},type=${body.type||'lead'},status=${body.status||'new'},notes=${body.notes?.trim()||null},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
  if(!rows[0]) return NextResponse.json({error:'Contact not found'},{status:404})
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${body.id},${session.userId},'contact_updated','Customer updated','Contact details updated.')`
  if(body.status) await runAutomations(session.organizationId,'status_changed',body.id,{status:body.status})
