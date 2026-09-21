@@ -31,6 +31,6 @@ let initialized = false
 export async function ensureSchema() {
   if (initialized) return
   const sql: any = getDb()
-  for (const statement of statements) await sql(statement)
+  for (const statement of statements) await sql.unsafe(statement)
   initialized = true
 }
