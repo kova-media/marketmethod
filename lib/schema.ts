@@ -2,7 +2,11 @@ import { getDb } from './db'
 
 const statements = [
   `create extension if not exists pgcrypto`,
-  `create table if not exists organizations (id uuid primary key default gen_random_uuid(), name text not null, slug text not null unique, industry text, logo_url text, primary_color text, created_at timestamptz not null default now())`,
+  `create table if not exists organizations (id uuid primary key default gen_random_uuid(), name text not null, slug text not null unique, industry text, logo_url text, primary_color text, sender_name text, sender_email text, reply_to_email text, sms_from_number text, created_at timestamptz not null default now())`,
+  `alter table organizations add column if not exists sender_name text`,
+  `alter table organizations add column if not exists sender_email text`,
+  `alter table organizations add column if not exists reply_to_email text`,
+  `alter table organizations add column if not exists sms_from_number text`,
   `create table if not exists users (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, email text not null, name text not null, role text not null default 'member', password_hash text, created_at timestamptz not null default now(), unique (organization_id,email))`,
   `create table if not exists contacts (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, first_name text not null, last_name text, email text, phone text, company text, type text not null default 'lead', source text, status text not null default 'new', notes text, created_at timestamptz not null default now(), updated_at timestamptz not null default now())`,
   `create index if not exists contacts_org_idx on contacts(organization_id)`,
