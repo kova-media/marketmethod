@@ -1,32 +1,26 @@
-import { Pool } from 'pg'
-
-declare global {
-  var marketMethodPool: Pool | undefined
-}
+import { neon } from '@neondatabase/serverless'
 
 type Sql = {
   (strings: TemplateStringsArray, ...values: unknown[]): Promise<any[]>
-  unsafe(query: string): Promise<any[]>
+  unsafe(query: string, values?: unknown[]): Promise<any[]>
 }
 
+let database: Sql | undefined
+
 export function getDb(): Sql {
+  if (database) return database
   const url = process.env.DATABASE_URL
   if (!url) throw new Error('DATABASE_URL is not configured')
-  if (!globalThis.marketMethodPool) {
-    globalThis.marketMethodPool = new Pool({ connectionString: url, max: 3, idleTimeoutMillis: 10000 })
-  }
-  const pool = globalThis.marketMethodPool
-  return Object.assign(
+  const client = neon(url)
+
+  database = Object.assign(
     async (strings: TemplateStringsArray, ...values: unknown[]) => {
-      const text = strings.reduce((sql, part, index) => sql + part + (index < values.length ? '$' + (index + 1) : ''), '')
-      const result = await pool.query(text, values)
-      return result.rows
+      const query = strings.reduce((sql, part, index) => sql + part + (index < values.length ? '$' + (index + 1) : ''), '')
+      return client(query, values)
     },
     {
-      unsafe: async (query: string) => {
-        const result = await pool.query(query)
-        return result.rows
-      },
+      unsafe: async (query: string, values: unknown[] = []) => client(query, values),
     },
   )
+  return database
 }
