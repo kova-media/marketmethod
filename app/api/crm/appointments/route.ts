@@ -2,6 +2,7 @@ import { NextRequest,NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
 import { getSession } from '../../../../lib/auth'
 import { ensureSchema } from '../../../../lib/schema'
+import { runAutomations } from '../../../../lib/automation'
 
 export async function GET(){await ensureSchema();const s=getSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const sql=getDb();const rows=await sql`select a.id,a.title,a.starts_at,a.ends_at,a.status,a.notes,a.contact_id,c.first_name,c.last_name from appointments a left join contacts c on c.id=a.contact_id where a.organization_id=${s.organizationId} order by a.starts_at limit 250`;return NextResponse.json({appointments:rows})}
 export async function POST(req:NextRequest){await ensureSchema();const s=getSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const b=await req.json();if(!b.title||!b.startsAt)return NextResponse.json({error:'Title and start time are required'},{status:400});const sql=getDb();const rows=await sql`insert into appointments(organization_id,contact_id,assigned_to,title,starts_at,ends_at,notes) values(${s.organizationId},${b.contactId||null},${s.userId},${b.title},${b.startsAt},${b.endsAt||null},${b.notes||null}) returning *`;return NextResponse.json({appointment:rows[0]},{status:201})}
