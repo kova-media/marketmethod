@@ -1,3 +1,4 @@
+import { ensureSchema } from '../../../../../lib/schema'
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
 import { createSession, hashPassword } from '../../../../lib/auth'
@@ -9,7 +10,7 @@ export async function POST(request: NextRequest) {
     if (!businessName || !name || !email || !password) return NextResponse.json({ error: 'Business name, name, email, and password are required' }, { status: 400 })
     if (password.length < 8) return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 })
 
-    const sql = getDb()
+    await ensureSchema()\n    const sql = getDb()
     const slugBase = businessName.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || 'business'
     const slug = `${slugBase}-${randomSuffix()}`
     const orgRows = await sql`
