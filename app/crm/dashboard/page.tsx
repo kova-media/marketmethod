@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Bell, CalendarDays, CheckSquare, ChevronDown, CircleHelp, LayoutDashboard, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings, Users, X } from 'lucide-react'
+import { Bell, CalendarDays, CarFront, CheckSquare, ChevronDown, CircleHelp, LayoutDashboard, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings, Users, X } from 'lucide-react'
 
 const nav=[
  {label:'Overview',href:'/crm/dashboard',icon:LayoutDashboard},
@@ -10,6 +10,7 @@ const nav=[
  {label:'Conversations',href:'/crm/conversations',icon:MessageSquare},
  {label:'Tasks',href:'/crm/tasks',icon:CheckSquare},
  {label:'Appointments',href:'/crm/appointments',icon:CalendarDays},
+ {label:'Automations',href:'/crm/automations',icon:ChevronDown},
 ]
 
 export default function Dashboard(){
