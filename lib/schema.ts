@@ -42,3 +42,5 @@ export async function ensureSchema() {
   for (const statement of statements) await sql.query(statement)
   initialized = true
 }
+
+// CRM schema bootstrap is intentionally idempotent.
