@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Bell, CalendarDays, CarFront, CheckSquare, ChevronDown, CircleHelp, LayoutDashboard, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings, Users, X } from 'lucide-react'
+import { Bell, Building2, CalendarDays, CarFront, CheckSquare, ChevronDown, CircleHelp, LayoutDashboard, Menu, MessageSquare, MoreHorizontal, Plus, Search, Settings, Users, X } from 'lucide-react'
 
 const nav=[
  {label:'Overview',href:'/crm/dashboard',icon:LayoutDashboard},
