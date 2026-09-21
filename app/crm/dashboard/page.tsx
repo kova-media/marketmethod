@@ -36,7 +36,7 @@ export default function CRMDashboard() {
   useEffect(() => {
     fetch('/api/crm/auth/me').then(r=>r.ok?r.json():Promise.reject()).then(data=>{
       setSession(data.user)
-      return fetch('/api/crm/contacts?organizationId='+data.user.organization_id)
+      return fetch('/api/crm/contacts')
     }).then(r=>r.json()).then(data=>{ if (data.contacts) setContacts(data.contacts) }).catch(()=>{})
   }, [])
 
