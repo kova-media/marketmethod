@@ -1,0 +1,61 @@
+import { createHash, createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from 'crypto'
+import { cookies } from 'next/headers'
+
+const SESSION_COOKIE = 'mm_session'
+const SESSION_DAYS = 30
+
+function secret() {
+  const value = process.env.DATABASE_URL
+  if (!value) throw new Error('DATABASE_URL is not configured')
+  return createHash('sha256').update(value).digest()
+}
+
+export function hashPassword(password: string) {
+  const salt = randomBytes(16).toString('hex')
+  const hash = pbkdf2Sync(password, salt, 120000, 32, 'sha256').toString('hex')
+  return `${salt}:${hash}`
+}
+
+export function verifyPassword(password: string, stored: string) {
+  const [salt, expected] = stored.split(':')
+  if (!salt || !expected) return false
+  const actual = pbkdf2Sync(password, salt, 120000, 32, 'sha256').toString('hex')
+  return timingSafeEqual(Buffer.from(actual), Buffer.from(expected))
+}
+
+function sign(payload: string) {
+  return createHmac('sha256', secret()).update(payload).digest('base64url')
+}
+
+export async function createSession(userId: string, organizationId: string) {
+  const expiresAt = Date.now() + SESSION_DAYS * 86400000
+  const payload = `${userId}.${organizationId}.${expiresAt}`
+  const token = `${payload}.${sign(payload)}`
+  const store = await cookies()
+  store.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    expires: new Date(expiresAt),
+  })
+}
+
+export async function getSession() {
+  const store = await cookies()
+  const token = store.get(SESSION_COOKIE)?.value
+  if (!token) return null
+  const parts = token.split('.')
+  if (parts.length !== 4) return null
+  const [userId, organizationId, expiresAt, signature] = parts
+  const payload = `${userId}.${organizationId}.${expiresAt}`
+  if (Number(expiresAt) < Date.now()) return null
+  const expected = sign(payload)
+  if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null
+  return { userId, organizationId }
+}
+
+export async function clearSession() {
+  const store = await cookies()
+  store.delete(SESSION_COOKIE)
+}
