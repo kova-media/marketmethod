@@ -1,0 +1,7 @@
+import { NextRequest,NextResponse } from 'next/server'
+import { getDb } from '../../../../lib/db'
+import { getSession } from '../../../../lib/auth'
+import { ensureSchema } from '../../../../lib/schema'
+
+export async function GET(){await ensureSchema();const s=getSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const sql=getDb();const [stages,contacts]=await Promise.all([sql`select id,name,position,color from pipeline_stages where organization_id=${s.organizationId} order by position`,sql`select id,first_name,last_name,email,phone,company,source,status,created_at from contacts where organization_id=${s.organizationId} order by created_at desc limit 500`]);return NextResponse.json({stages,contacts})}
+export async function PATCH(req:NextRequest){await ensureSchema();const s=getSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const b=await req.json();const sql=getDb();const rows=await sql`update contacts set status=${b.status},updated_at=now() where id=${b.contactId} and organization_id=${s.organizationId} returning id,status`;if(!rows[0])return NextResponse.json({error:'Contact not found'},{status:404});await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${s.organizationId},${b.contactId},${s.userId},'status_changed','Pipeline stage changed',${'Moved to '+b.status})`;return NextResponse.json({contact:rows[0]})}
