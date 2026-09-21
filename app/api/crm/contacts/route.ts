@@ -22,6 +22,7 @@ export async function POST(request:NextRequest){
  const sql=getDb()
  const rows=await sql`insert into contacts(organization_id,first_name,last_name,email,phone,company,source,status,notes) values(${session.organizationId},${body.firstName.trim()},${body.lastName?.trim()||null},${body.email?.trim()||null},${body.phone?.trim()||null},${body.company?.trim()||null},${body.source||'Manual'},${body.status||'new'},${body.notes?.trim()||null}) returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${rows[0].id},${session.userId},'contact_created','Customer created','Contact added manually.')`
+ await runAutomations(session.organizationId,'contact_created',rows[0].id,{status:rows[0].status,type:rows[0].type,source:rows[0].source})
  return NextResponse.json({contact:rows[0]},{status:201})
 }
 
@@ -35,5 +36,6 @@ export async function PATCH(request:NextRequest){
  const rows=await sql`update contacts set first_name=${body.firstName?.trim()||null},last_name=${body.lastName?.trim()||null},email=${body.email?.trim()||null},phone=${body.phone?.trim()||null},company=${body.company?.trim()||null},status=${body.status||'new'},notes=${body.notes?.trim()||null},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
  if(!rows[0]) return NextResponse.json({error:'Contact not found'},{status:404})
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${body.id},${session.userId},'contact_updated','Customer updated','Contact details updated.')`
+ if(body.status) await runAutomations(session.organizationId,'status_changed',body.id,{status:body.status})
  return NextResponse.json({contact:rows[0]})
 }
