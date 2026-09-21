@@ -9,6 +9,7 @@ export default function SettingsPage(){
  const [invites,setInvites]=useState<any[]>([])
  const [inviteEmail,setInviteEmail]=useState('')
  const [inviteUrl,setInviteUrl]=useState('')
+ const [newStage,setNewStage]=useState('')
  const [saved,setSaved]=useState(false)
 
  useEffect(()=>{
@@ -18,6 +19,9 @@ export default function SettingsPage(){
    if(b.ok)setInvites(bd.invites||[])
   })
  },[])
+
+ async function addStage(){if(!newStage.trim())return;const r=await fetch('/api/crm/stages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:newStage})});const d=await r.json();if(r.ok){setStages(p=>[...p,d.stage].sort((a,b)=>a.position-b.position));setNewStage('')}}
+ async function removeStage(id:string){const r=await fetch('/api/crm/stages',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});if(r.ok)setStages(p=>p.filter(x=>x.id!==id))}
 
  async function save(){
   const r=await fetch('/api/crm/settings',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({
@@ -78,7 +82,8 @@ export default function SettingsPage(){
 
    <section className="panel settings-panel">
     <div className="panel-head"><div><span className="eyebrow">PIPELINE</span><h3>Stages</h3></div></div>
-    {stages.map(s=><div className="settings-row" key={s.id}><span className="stage-number">{s.position}</span><span><strong>{s.name}</strong></span><em>Active</em></div>)}
+    <div className="settings-form stage-add"><input value={newStage} onChange={e=>setNewStage(e.target.value)} placeholder="New stage name" onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addStage()}}}/><button className="add-button" onClick={addStage}>Add stage</button></div>
+    {stages.map(s=><div className="settings-row" key={s.id}><span className="stage-number">{s.position}</span><span><strong>{s.name}</strong></span><button className="row-delete" onClick={()=>removeStage(s.id)}>Delete</button></div>)}
    </section>
   </div>:<div className="empty-module">Loading workspace...</div>}
  </main>
