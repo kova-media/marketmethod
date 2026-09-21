@@ -154,3 +154,65 @@ from organizations o
 cross join (values ('New',1),('Contacted',2),('Qualified',3),('Won',4)) as s(name,position)
 where o.slug = 'fullerton-automotive'
 on conflict (organization_id, name) do nothing;
+
+
+create table if not exists vehicles (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete cascade,
+  contact_id uuid not null references contacts(id) on delete cascade,
+  year integer,
+  make text,
+  model text,
+  vin text,
+  mileage integer,
+  license_plate text,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists vehicles_org_idx on vehicles(organization_id);
+create index if not exists vehicles_contact_idx on vehicles(contact_id);
+
+create table if not exists service_records (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete cascade,
+  contact_id uuid not null references contacts(id) on delete cascade,
+  vehicle_id uuid references vehicles(id) on delete cascade,
+  service_date date not null default current_date,
+  service_type text not null,
+  mileage integer,
+  amount numeric(12,2),
+  notes text,
+  next_recommended_date date,
+  next_recommended_mileage integer,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists service_records_org_idx on service_records(organization_id);
+create index if not exists service_records_vehicle_idx on service_records(vehicle_id, service_date desc);
+
+create table if not exists properties (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete cascade,
+  contact_id uuid not null references contacts(id) on delete cascade,
+  name text,
+  address text,
+  city text,
+  state text,
+  postal_code text,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists service_history (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references organizations(id) on delete cascade,
+  contact_id uuid not null references contacts(id) on delete cascade,
+  property_id uuid references properties(id) on delete cascade,
+  service_date date not null default current_date,
+  service_type text not null,
+  amount numeric(12,2),
+  notes text,
+  next_recommended_date date,
+  created_at timestamptz not null default now()
+);
