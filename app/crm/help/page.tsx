@@ -1,1 +1,18 @@
-export default function HelpPage(){return <main className="module-page"><header className="module-top"><div><a href="/crm/dashboard" className="back-link">← Dashboard</a><span className="eyebrow">SUPPORT</span><h1>Help</h1><p>Market Method CRM documentation and support will live here.</p></div></header><div className="empty-module"><h2>CRM foundation is live.</h2><p>Authentication, contacts, pipeline, tasks, appointments, conversations, workspace settings, and website lead capture are connected to the same customer database.</p></div></main>
+export default function HelpPage() {
+  return (
+    <main className="module-page">
+      <header className="module-top">
+        <div>
+          <a href="/crm/dashboard" className="back-link">← Dashboard</a>
+          <span className="eyebrow">SUPPORT</span>
+          <h1>Help</h1>
+          <p>Market Method CRM documentation and support will live here.</p>
+        </div>
+      </header>
+      <div className="empty-module">
+        <h2>CRM foundation is live.</h2>
+        <p>Authentication, contacts, pipeline, tasks, appointments, conversations, workspace settings, and website lead capture are connected to the same customer database.</p>
+      </div>
+    </main>
+  )
+}
