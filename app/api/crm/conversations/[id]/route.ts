@@ -181,9 +181,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   }
 
+  const messageSubject = c[0].channel === 'email' ? (b.subject?.trim() || 'Message from ' + c[0].organization_name) : null
+
   const rows = await sql`
     insert into messages(organization_id, conversation_id, direction, body, subject)
-    values(${s.organizationId}, ${params.id}, 'outbound', ${text}, ${c[0].channel === 'email' ? "b.subject?.trim() || 'Message from ' + c[0].organization_name" : 'null'})
+    values(${s.organizationId}, ${params.id}, 'outbound', ${text}, ${messageSubject})
     returning id, direction, body, sent_at
   `
 
