@@ -33,9 +33,12 @@ export async function PATCH(request:NextRequest){
  const body=await request.json()
  if(!body.id) return NextResponse.json({error:'Contact id is required'},{status:400})
  const sql=getDb()
- const rows=await sql`update contacts set first_name=${body.firstName?.trim()||null},last_name=${body.lastName?.trim()||null},email=${body.email?.trim()||null},phone=${body.phone?.trim()||null},company=${body.company?.trim()||null},type=${body.type||'lead'},status=${body.status||'new'},notes=${body.notes?.trim()||null},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
- if(!rows[0]) return NextResponse.json({error:'Contact not found'},{status:404})
+ const current=await sql`select * from contacts where id=${body.id} and organization_id=${session.organizationId} limit 1`
+ if(!current[0]) return NextResponse.json({error:'Contact not found'},{status:404})
+ const before=current[0]
+ const nextStatus=body.status ?? before.status
+ const rows=await sql`update contacts set first_name=${body.firstName !== undefined ? body.firstName?.trim() || null : before.first_name},last_name=${body.lastName !== undefined ? body.lastName?.trim() || null : before.last_name},email=${body.email !== undefined ? body.email?.trim() || null : before.email},phone=${body.phone !== undefined ? body.phone?.trim() || null : before.phone},company=${body.company !== undefined ? body.company?.trim() || null : before.company},type=${body.type ?? before.type},status=${nextStatus},notes=${body.notes !== undefined ? body.notes?.trim() || null : before.notes},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${body.id},${session.userId},'contact_updated','Customer updated','Contact details updated.')`
- if(body.status) await runAutomations(session.organizationId,'status_changed',body.id,{status:body.status})
+ if(body.status !== undefined && body.status !== before.status) await runAutomations(session.organizationId,'status_changed',body.id,{status:nextStatus,previousStatus:before.status})
  return NextResponse.json({contact:rows[0]})
 }
