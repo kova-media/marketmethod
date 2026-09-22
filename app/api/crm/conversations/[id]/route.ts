@@ -120,6 +120,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!c[0]) return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
 
   const text = b.body.trim()
+  let providerMessageId: string | null = null
 
   if (c[0].channel === 'email') {
     const apiKey = process.env.RESEND_API_KEY
@@ -146,6 +147,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       const detail = await response.text()
       return NextResponse.json({ error: 'Email could not be sent.', detail }, { status: 502 })
     }
+    const emailResult = await response.json().catch(() => ({}))
+    providerMessageId = emailResult.id || null
   } else if (c[0].channel === 'sms') {
     const sid = process.env.TWILIO_ACCOUNT_SID
     const token = process.env.TWILIO_AUTH_TOKEN
@@ -179,14 +182,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       const detail = await response.text()
       return NextResponse.json({ error: 'SMS could not be sent.', detail }, { status: 502 })
     }
+    const smsResult = await response.json().catch(() => ({}))
+    providerMessageId = smsResult.sid || null
   }
 
   const messageSubject = c[0].channel === 'email' ? (b.subject?.trim() || 'Message from ' + c[0].organization_name) : null
 
   const rows = await sql`
-    insert into messages(organization_id, conversation_id, direction, body, subject)
-    values(${s.organizationId}, ${params.id}, 'outbound', ${text}, ${messageSubject})
-    returning id, direction, body, sent_at
+    insert into messages(organization_id, conversation_id, direction, body, subject, external_id, metadata)
+    values(${s.organizationId}, ${params.id}, 'outbound', ${text}, ${messageSubject}, ${providerMessageId}, ${JSON.stringify({ provider: c[0].channel })})
+    returning id, direction, body, subject, external_id, sent_at
   `
 
   await sql`
