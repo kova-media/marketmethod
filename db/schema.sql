@@ -154,6 +154,12 @@ create table if not exists automations (
   created_at timestamptz not null default now()
 );
 
+create table if not exists automation_jobs (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, automation_id uuid references automations(id) on delete cascade, contact_id uuid references contacts(id) on delete cascade, event_type text not null, actions jsonb not null default '[]'::jsonb, payload jsonb not null default '{}'::jsonb, run_at timestamptz not null, status text not null default 'pending', attempts integer not null default 0, last_error text, created_at timestamptz not null default now(), completed_at timestamptz);
+
+create index if not exists automation_jobs_due_idx on automation_jobs(status,run_at);
+
+
+
 insert into pipeline_stages (organization_id, name, position)
 select o.id, s.name, s.position
 from organizations o
