@@ -35,7 +35,7 @@ export async function POST(req:NextRequest){
  const token=randomBytes(24).toString('hex')
  const rows=await sql`insert into user_invites(organization_id,email,role,token,expires_at,created_by) values(${s.organizationId},${email},${role},${token},now()+interval '7 days',${s.userId}) returning id,email,role,expires_at,token`
  const inviteUrl='/crm/invite/'+token
- const appUrl=process.env.CRM_APP_URL||'https://marketmethod.co'
+ const appUrl=process.env.CRM_APP_URL||'https://marketmethod.com'
  const apiKey=process.env.RESEND_API_KEY
  let emailSent=false
  if(apiKey){
