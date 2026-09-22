@@ -1,30 +1,38 @@
 'use client'
 
 import {FormEvent,useEffect,useState} from 'react'
-import {ChevronLeft,Plus,X} from 'lucide-react'
+import {ChevronLeft,Plus,X,Trash2} from 'lucide-react'
 
 const triggers=[['contact_created','New contact created'],['status_changed','Pipeline status changes'],['appointment_completed','Appointment completed']]
+const conditionFields=[
+ ['status','Status'],
+ ['previousStatus','Previous status'],
+ ['type','Contact type'],
+ ['source','Lead source']
+]
+const statusOptions=['new','contacted','qualified','won','lost']
+const typeOptions=['lead','customer']
 
 export default function AutomationsPage(){
  const [items,setItems]=useState<any[]>([]),[events,setEvents]=useState<any[]>([]),[show,setShow]=useState(false)
  const [form,setForm]=useState({
-  name:'',
-  triggerType:'contact_created',
-  actionType:'create_task',
-  taskTitle:'Follow up with new contact',
-  taskDays:'1',
-  emailSubject:'Following up',
-  messageBody:'Hi {{contact.first_name}}, just following up.',
-  recipient:'{{contact.email}}',
-  waitAmount:'1',
-  waitUnit:'days',
-  delayedAction:'send_email'
+  name:'',triggerType:'contact_created',actionType:'create_task',taskTitle:'Follow up with new contact',taskDays:'1',
+  emailSubject:'Following up',messageBody:'Hi {{contact.first_name}}, just following up.',recipient:'{{contact.email}}',
+  waitAmount:'1',waitUnit:'days',delayedAction:'send_email'
  })
+ const [conditions,setConditions]=useState<any[]>([])
  useEffect(()=>{load()},[])
  async function load(){
-  const r=await fetch('/api/crm/automations')
-  const d=await r.json()
+  const r=await fetch('/api/crm/automations');const d=await r.json()
   if(r.ok){setItems(d.automations||[]);setEvents(d.events||[])}
+ }
+ function addCondition(){setConditions(p=>[...p,{field:'status',value:'new'}])}
+ function updateCondition(index:number,key:string,value:string){setConditions(p=>p.map((c,i)=>i===index?{...c,[key]:value}:c))}
+ function removeCondition(index:number){setConditions(p=>p.filter((_,i)=>i!==index))}
+ function conditionValueOptions(field:string){
+  if(field==='status'||field==='previousStatus')return statusOptions
+  if(field==='type')return typeOptions
+  return null
  }
  function actionFrom(type:string){
   if(type==='create_task')return {type:'create_task',title:form.taskTitle,dueDays:Number(form.taskDays)}
@@ -32,26 +40,22 @@ export default function AutomationsPage(){
   return {type:'send_sms',to:form.recipient,body:form.messageBody}
  }
  function buildActions(){
-  if(form.actionType==='wait_then_action'){
-   return [
-    {type:'wait',[form.waitUnit]:Number(form.waitAmount)},
-    actionFrom(form.delayedAction)
-   ]
-  }
+  if(form.actionType==='wait_then_action')return [{type:'wait',[form.waitUnit]:Number(form.waitAmount)},actionFrom(form.delayedAction)]
   return [actionFrom(form.actionType)]
  }
  async function add(e:FormEvent){
   e.preventDefault()
-  const r=await fetch('/api/crm/automations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-   name:form.name,triggerType:form.triggerType,actions:buildActions()
-  })})
+  const r=await fetch('/api/crm/automations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:form.name,triggerType:form.triggerType,conditions,actions:buildActions()})})
   const d=await r.json()
-  if(r.ok){setItems(p=>[d.automation,...p]);setShow(false)}
+  if(r.ok){setItems(p=>[d.automation,...p]);setShow(false);setConditions([])}
  }
  async function toggle(id:string,enabled:boolean){
   const r=await fetch('/api/crm/automations',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,enabled})})
-  const d=await r.json()
-  if(r.ok)setItems(p=>p.map(x=>x.id===id?d.automation:x))
+  const d=await r.json();if(r.ok)setItems(p=>p.map(x=>x.id===id?d.automation:x))
+ }
+ function describeConditions(conditions:any[]){
+  if(!conditions?.length)return 'Runs for every matching trigger'
+  return conditions.map(c=>conditionFields.find(x=>x[0]===c.field)?.[1]||c.field).map((field:any,i)=>field+' = '+conditions[i].value).join(' · ')
  }
  return <main className="module-page">
   <header className="module-top">
@@ -61,7 +65,7 @@ export default function AutomationsPage(){
   <div className="settings-grid">
    <section className="panel settings-panel">
     <div className="panel-head"><div><span className="eyebrow">RULES</span><h3>Active automations</h3></div><span className="count-badge">{items.length}</span></div>
-    {items.map(a=><div className="automation-row" key={a.id}><div><strong>{a.name}</strong><small>{triggers.find(x=>x[0]===a.trigger_type)?.[1]||a.trigger_type}</small></div><button className={'toggle '+(a.enabled?'on':'')} onClick={()=>toggle(a.id,!a.enabled)}><i/></button></div>)}
+    {items.map(a=><div className="automation-row" key={a.id}><div><strong>{a.name}</strong><small>{triggers.find(x=>x[0]===a.trigger_type)?.[1]||a.trigger_type} · {describeConditions(a.conditions)}</small></div><button className={'toggle '+(a.enabled?'on':'')} onClick={()=>toggle(a.id,!a.enabled)}><i/></button></div>)}
     {!items.length&&<div className="soft-empty">No automation rules yet.</div>}
    </section>
    <section className="panel settings-panel">
@@ -77,25 +81,26 @@ export default function AutomationsPage(){
     <div className="modal-form">
      <input placeholder="Automation name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required/>
      <select value={form.triggerType} onChange={e=>setForm({...form,triggerType:e.target.value})}>{triggers.map(x=><option key={x[0]} value={x[0]}>{x[1]}</option>)}</select>
+     <div className="automation-builder-head"><strong>Conditions</strong><button type="button" className="text-action" onClick={addCondition}>+ Add condition</button></div>
+     {conditions.map((condition,index)=>{
+      const options=conditionValueOptions(condition.field)
+      return <div className="condition-row" key={index}>
+       <select value={condition.field} onChange={e=>updateCondition(index,'field',e.target.value)}>{conditionFields.map(x=><option key={x[0]} value={x[0]}>{x[1]}</option>)}</select>
+       {options?<select value={condition.value} onChange={e=>updateCondition(index,'value',e.target.value)}>{options.map(x=><option key={x} value={x}>{x}</option>)}</select>:<input value={condition.value} onChange={e=>updateCondition(index,'value',e.target.value)} placeholder="Value"/>}
+       <button type="button" className="row-delete" onClick={()=>removeCondition(index)} aria-label="Remove condition"><Trash2 size={15}/></button>
+      </div>
+     })}
+     {!conditions.length&&<small className="settings-note">No conditions means the rule runs whenever its trigger occurs.</small>}
+     <div className="automation-builder-head"><strong>Action</strong></div>
      <select value={form.actionType} onChange={e=>setForm({...form,actionType:e.target.value})}>
-      <option value="create_task">Create task now</option>
-      <option value="send_email">Send email now</option>
-      <option value="send_sms">Send SMS now</option>
-      <option value="wait_then_action">Wait, then take action</option>
+      <option value="create_task">Create task now</option><option value="send_email">Send email now</option><option value="send_sms">Send SMS now</option><option value="wait_then_action">Wait, then take action</option>
      </select>
      {form.actionType==='wait_then_action'&&<>
       <div className="form-grid"><input type="number" min="1" value={form.waitAmount} onChange={e=>setForm({...form,waitAmount:e.target.value})} placeholder="Wait amount"/><select value={form.waitUnit} onChange={e=>setForm({...form,waitUnit:e.target.value})}><option value="minutes">Minutes</option><option value="hours">Hours</option><option value="days">Days</option></select></div>
       <select value={form.delayedAction} onChange={e=>setForm({...form,delayedAction:e.target.value})}><option value="create_task">Create task</option><option value="send_email">Send email</option><option value="send_sms">Send SMS</option></select>
      </>}
-     {(form.actionType==='create_task'||form.delayedAction==='create_task'&&form.actionType==='wait_then_action')&&<>
-      <input placeholder="Task to create" value={form.taskTitle} onChange={e=>setForm({...form,taskTitle:e.target.value})} required/>
-      <input type="number" min="0" placeholder="Days until task is due" value={form.taskDays} onChange={e=>setForm({...form,taskDays:e.target.value})}/>
-     </>}
-     {(form.actionType==='send_email'||form.actionType==='send_sms'||(form.actionType==='wait_then_action'&&form.delayedAction!=='create_task'))&&<>
-      <input placeholder="Recipient" value={form.recipient} onChange={e=>setForm({...form,recipient:e.target.value})}/>
-      {(form.actionType==='send_email'||(form.actionType==='wait_then_action'&&form.delayedAction==='send_email'))&&<input placeholder="Email subject" value={form.emailSubject} onChange={e=>setForm({...form,emailSubject:e.target.value})}/>}
-      <textarea placeholder="Message" value={form.messageBody} onChange={e=>setForm({...form,messageBody:e.target.value})} required/>
-     </>}
+     {(form.actionType==='create_task'||(form.actionType==='wait_then_action'&&form.delayedAction==='create_task'))&&<><input placeholder="Task to create" value={form.taskTitle} onChange={e=>setForm({...form,taskTitle:e.target.value})} required/><input type="number" min="0" placeholder="Days until task is due" value={form.taskDays} onChange={e=>setForm({...form,taskDays:e.target.value})}/></>}
+     {(form.actionType==='send_email'||form.actionType==='send_sms'||(form.actionType==='wait_then_action'&&form.delayedAction!=='create_task'))&&<><input placeholder="Recipient" value={form.recipient} onChange={e=>setForm({...form,recipient:e.target.value})}/>{(form.actionType==='send_email'||(form.actionType==='wait_then_action'&&form.delayedAction==='send_email'))&&<input placeholder="Email subject" value={form.emailSubject} onChange={e=>setForm({...form,emailSubject:e.target.value})}/>}<textarea placeholder="Message" value={form.messageBody} onChange={e=>setForm({...form,messageBody:e.target.value})} required/></>}
      <small className="settings-note">Use {'{{contact.first_name}}'}, {'{{contact.email}}'}, {'{{contact.phone}}'} and {'{{organization.name}}'} in messages. Delayed actions are queued and processed automatically.</small>
      <button className="add-button">Create automation</button>
     </div>
