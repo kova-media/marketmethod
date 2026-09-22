@@ -26,9 +26,9 @@ export default function Dashboard(){
  const [query,setQuery]=useState('')
 
  useEffect(()=>{
-  Promise.all([fetch('/api/crm/auth/me'),fetch('/api/crm/contacts'),fetch('/api/crm/tasks'),fetch('/api/crm/appointments'),fetch('/api/crm/pipeline'),fetch('/api/crm/conversations')]).then(async ([a,b,c,d,e])=>{
+  Promise.all([fetch('/api/crm/auth/me'),fetch('/api/crm/contacts'),fetch('/api/crm/tasks'),fetch('/api/crm/appointments'),fetch('/api/crm/pipeline'),fetch('/api/crm/conversations')]).then(async ([a,b,c,d,e,f])=>{
    if(a.status===401){window.location.href='/crm/login';return}
-   const [ad,bd,cd,dd,ed,fd]=await Promise.all([a.json(),b.json(),c.json(),d.json(),e.json(),(await fetch('/api/crm/conversations')).json()])
+   const [ad,bd,cd,dd,ed,fd]=await Promise.all([a.json(),b.json(),c.json(),d.json(),e.json(),f.json()])
    setUser(ad.user);setContacts(bd.contacts||[]);setTasks(cd.tasks||[]);setAppointments(dd.appointments||[]);setStages(ed.stages||[]);setUnreadConversations((fd.conversations||[]).reduce((sum:any,item:any)=>sum+Number(item.unread_count||0),0))
   })
  },[])
