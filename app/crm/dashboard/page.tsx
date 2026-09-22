@@ -40,7 +40,7 @@ export default function Dashboard(){
 
  async function add(){
   setSaving(true)
-  const r=await fetch('/api/crm/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)})
+  const r=await fetch('/api/crm/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...form,type:'customer'})})
   const d=await r.json();setSaving(false)
   if(r.ok){setContacts(p=>[d.contact,...p]);setShowAdd(false);setForm({firstName:'',lastName:'',email:'',phone:'',company:''})}
  }
