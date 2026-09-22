@@ -34,5 +34,25 @@ export async function POST(req:NextRequest){
  if(existing[0])return NextResponse.json({error:'That email is already a user in this workspace.'},{status:409})
  const token=randomBytes(24).toString('hex')
  const rows=await sql`insert into user_invites(organization_id,email,role,token,expires_at,created_by) values(${s.organizationId},${email},${role},${token},now()+interval '7 days',${s.userId}) returning id,email,role,expires_at,token`
- return NextResponse.json({invite:rows[0],inviteUrl:'/crm/invite/'+token},{status:201})
+ const inviteUrl='/crm/invite/'+token
+ const appUrl=process.env.CRM_APP_URL||'https://marketmethod.co'
+ const apiKey=process.env.RESEND_API_KEY
+ let emailSent=false
+ if(apiKey){
+  const organization=(await sql`select name,sender_name,sender_email,reply_to_email from organizations where id=${s.organizationId} limit 1`)[0]
+  const fromEmail=organization?.sender_email||'contact@marketmethod.co'
+  const response=await fetch('https://api.resend.com/emails',{
+   method:'POST',
+   headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},
+   body:JSON.stringify({
+    from:(organization?.sender_name||organization?.name||'Market Method')+' <'+fromEmail+'>',
+    to:[email],
+    reply_to:organization?.reply_to_email||fromEmail,
+    subject:'You have been invited to Market Method',
+    text:['You have been invited to join '+(organization?.name||'a Market Method workspace')+'.','','Accept your invitation:',appUrl+inviteUrl,'','This invitation expires in 7 days.'].join('\n')
+   })
+  })
+  emailSent=response.ok
+ }
+ return NextResponse.json({invite:rows[0],inviteUrl,emailSent},{status:201})
 }
