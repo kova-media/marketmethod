@@ -53,7 +53,8 @@ export async function POST(req: NextRequest) {
   const s = getSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const user = await getDb()`
+  const sql = getDb()
+  const user = await sql`
     select role from users where id = ${s.userId} and organization_id = ${s.organizationId} limit 1
   `
   if (user[0]?.role !== 'owner') return NextResponse.json({ error: 'Owner access required' }, { status: 403 })
@@ -111,7 +112,8 @@ export async function DELETE(req: NextRequest) {
   const s = getSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const user = await getDb()`
+  const sql = getDb()
+  const user = await sql`
     select role from users where id = ${s.userId} and organization_id = ${s.organizationId} limit 1
   `
   if (user[0]?.role !== 'owner') return NextResponse.json({ error: 'Owner access required' }, { status: 403 })
