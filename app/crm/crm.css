@@ -26,3 +26,41 @@
 .custom-field-row{display:grid;grid-template-columns:140px 1fr;align-items:center;gap:10px;margin-bottom:8px}
 .custom-field-row span{font-size:9px;color:#666}
 .custom-field-row input{height:38px;border:1px solid #d0ccc4;background:#eeece6;padding:0 10px;outline:none;font:inherit;font-size:10px}
+
+
+/* Readability pass */
+.crm-sidebar{width:270px;padding:25px 16px}.crm-main{margin-left:270px}
+.crm-brand{gap:12px;padding:5px 9px 30px}.crm-brand strong{font-size:15px}.crm-brand span{font-size:10px}
+.crm-mark{width:32px;height:32px;font-size:14px}.workspace{padding:0 7px 22px}.workspace>span{font-size:9px;margin:0 9px 9px}.workspace button{padding:11px 9px;font-size:12px}.workspace-dot{width:24px;height:24px;font-size:10px!important}
+.crm-nav{padding-top:19px;gap:4px}.crm-nav button,.sidebar-bottom>button,.crm-nav a,.sidebar-bottom>a{gap:12px;padding:12px;font-size:13px}
+.crm-nav em{width:21px;height:21px;font-size:10px}.user-chip{gap:10px;padding:14px 8px 4px}.user-chip strong{font-size:12px}.user-chip small{font-size:9px}.avatar{width:32px;height:32px;font-size:10px}
+
+.crm-header{height:94px;padding:0 48px}.crumb{font-size:10px}.crm-header h1{font-size:25px}.header-actions{gap:12px}.search{height:42px;width:270px;padding:0 13px}.search input{font-size:12px}.icon-button{width:42px;height:42px}.add-button{height:42px;padding:0 17px;font-size:12px}
+
+.dashboard{padding:48px 48px 70px;max-width:1550px}.welcome{margin-bottom:32px}.eyebrow{font-size:9px;margin-bottom:11px}.welcome h2{font-size:40px}.welcome p{font-size:13px}.outline-button{height:42px;padding:0 15px;font-size:11px}
+.metrics{gap:11px;margin-bottom:11px}.metric{min-height:155px;padding:20px}.metric>span{font-size:12px}.metric strong{font-size:42px;margin-bottom:8px}.metric small{font-size:10px}
+.dashboard-grid{gap:11px;margin-bottom:11px}.panel-head{min-height:84px;padding:19px 22px}.panel-head h3{font-size:17px}.count-badge{width:28px;height:28px;font-size:10px}.pipeline{padding:22px 22px 24px}.pipeline-stage{padding-bottom:20px}.pipeline-stage>div:first-child{margin-bottom:8px}.pipeline-stage span,.pipeline-stage strong{font-size:12px}.stage-line{height:6px}
+.task-list{padding:4px 22px}.task{grid-template-columns:18px 1fr auto;gap:12px;padding:17px 0}.task-check{width:17px;height:17px}.task strong{font-size:12px}.task span,.task small{font-size:10px}
+.table-row{min-height:65px;gap:12px;padding:0 22px;font-size:10px}.table-head{min-height:42px;font-size:8px}.contact-cell{gap:10px}.contact-cell>b{width:30px;height:30px;font-size:9px}.contact-cell>strong{font-size:12px}.contact-cell small{font-size:9px}
+.empty-view{padding:90px 48px}.empty-view h2{font-size:54px}.empty-view p{font-size:14px}
+
+.module-page{padding:46px 48px 80px}.module-top{max-width:1550px;margin-bottom:34px}.module-top h1{font-size:50px}.module-top p{font-size:13px}.back-link{font-size:10px;margin-bottom:25px}
+.module-toolbar{max-width:1550px;margin-bottom:12px}.module-search{height:46px;max-width:500px}.module-search input{font-size:12px}.filter-pills{gap:6px}.filter-pills button{padding:10px 13px;font-size:10px}.result-count{font-size:10px}
+.contact-list{max-width:1550px}.contact-row{min-height:82px;grid-template-columns:42px 1fr 170px 125px 22px;gap:15px;padding:0 22px}.contact-avatar{width:38px;height:38px;font-size:10px}.contact-main{gap:5px}.contact-main strong{font-size:13px}.contact-main small,.contact-source{font-size:10px}.contact-status{font-size:10px}
+.empty-module{padding:90px 30px}.empty-module h2{font-size:30px}.empty-module p{font-size:12px}
+.add-modal{width:min(560px,100%);padding:42px}.add-modal h2{font-size:36px}.modal-form{gap:11px}.modal-form input,.modal-form select,.modal-form textarea{font-size:12px;min-height:48px}.modal-form input{height:48px}.modal-form textarea{min-height:95px}
+
+.contact-drawer{width:min(620px,100%)}.contact-drawer>header{padding:34px 36px}.contact-drawer header h2{font-size:32px}.drawer-body{padding:32px 36px}.drawer-section{padding-bottom:32px;margin-bottom:32px}.drawer-section h3{font-size:14px}.drawer-fields{gap:10px}.drawer-fields input,.drawer-fields textarea,.drawer-fields select{font-size:11px;min-height:45px}.note-box textarea{font-size:11px}.activity-list{gap:18px}.activity-list strong{font-size:12px}.activity-list p{font-size:10px}.activity-list small,.muted{font-size:9px}
+
+.kanban{max-width:1550px;gap:12px}.kanban-col{min-height:470px}.kanban-col>header{padding:18px}.kanban-col header strong{font-size:13px}.kanban-col header small{font-size:9px}.kanban-cards{padding:11px;gap:10px}.kanban-card{padding:15px}.kanban-card strong{font-size:12px}.kanban-card small{font-size:9px}.kanban-card select{height:32px;font-size:9px}
+.task-columns{max-width:1250px;gap:12px}.task-column>header{padding:20px 22px}.task-column h2{font-size:16px}.task-column header span{font-size:10px}.task-row-card{grid-template-columns:26px 1fr;gap:12px;padding:18px 21px}.task-row-card strong{font-size:12px}.task-row-card small,.task-row-card p{font-size:9px}.circle-check{width:19px;height:19px}
+.appointment-list{max-width:1250px}.appointment-row{grid-template-columns:105px 1fr 155px;gap:20px;padding:21px 24px}.appointment-date strong{font-size:15px}.appointment-date small,.appointment-main small{font-size:9px}.appointment-main>strong{font-size:12px}.appointment-main p{font-size:9px}.appointment-row select{height:36px;font-size:10px}
+.conversation-layout{max-width:1350px;height:680px;grid-template-columns:340px 1fr}.conversation-list button{padding:16px 18px}.conversation-list strong{font-size:12px}.conversation-list small,.conversation-preview{font-size:9px}.conversation-main>header{padding:21px 25px}.conversation-main h2{font-size:20px}.message-list{padding:24px;gap:11px}.message-bubble{padding:12px 14px;font-size:11px}.message-bubble small{font-size:8px}.message-compose{padding:14px}.message-compose textarea{font-size:11px}
+
+.settings-grid{max-width:1250px;gap:12px}.settings-form{padding:24px;gap:16px}.settings-form label{font-size:10px}.settings-form input{height:46px;font-size:11px}.settings-row{min-height:64px;padding:0 22px}.settings-row strong{font-size:12px}.settings-row small{font-size:9px}.stage-number{width:27px;height:27px;font-size:9px}
+.automation-row{min-height:70px;padding:0 22px}.automation-row strong{font-size:12px}.automation-row small{font-size:9px}.toggle{width:38px;height:20px}.toggle i{width:16px;height:16px}.toggle.on i{transform:translateX(18px)}
+
+.auth-card{width:min(480px,100%);padding:48px}.auth-card h1{font-size:38px}.auth-card>p{font-size:11px}.auth-form input,.auth-form select,.auth-submit{height:48px;font-size:12px}
+
+@media(max-width:1100px){.crm-sidebar{width:240px}.crm-main{margin-left:240px}.crm-header{padding:0 30px}.dashboard,.module-page{padding-left:30px;padding-right:30px}}
+@media(max-width:760px){.crm-sidebar{width:270px}.crm-main{margin-left:0}.crm-header{height:80px;padding:0 18px}.dashboard,.module-page{padding:28px 18px 50px}.welcome h2{font-size:32px}.module-top h1{font-size:40px}.metrics{grid-template-columns:repeat(2,1fr)}.metric{min-height:125px}.metric strong{font-size:34px}}
