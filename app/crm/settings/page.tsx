@@ -13,11 +13,12 @@ export default function SettingsPage(){
  const [saved,setSaved]=useState(false)
  const [fields,setFields]=useState<any[]>([])
  const [newField,setNewField]=useState('')
+ const [integrations,setIntegrations]=useState<any>({})
 
  useEffect(()=>{
   Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites'),fetch('/api/crm/custom-fields')]).then(async([a,b,c])=>{
    const [ad,bd,fd]=await Promise.all([a.json(),b.json(),c.json()])
-   if(ad.organization){setOrg(ad.organization);setUsers(ad.users||[]);setStages(ad.stages||[])}
+   if(ad.organization){setOrg(ad.organization);setUsers(ad.users||[]);setStages(ad.stages||[]);setIntegrations(ad.integrations||{})}
    if(b.ok)setInvites(bd.invites||[])
    if(c.ok)setFields(fd.fields||[])
   })
@@ -69,6 +70,13 @@ export default function SettingsPage(){
      <label>SMS sending number<input value={org.sms_from_number||''} onChange={e=>setOrg({...org,sms_from_number:e.target.value})} placeholder="+15551234567"/></label>
      <p className="settings-note">Email uses Resend. SMS uses Twilio. Provider credentials are kept at the deployment level.</p>
     </div>
+   </section>
+
+   <section className="panel settings-panel">
+    <div className="panel-head"><div><span className="eyebrow">INTEGRATIONS</span><h3>Connection status</h3></div></div>
+    <div className="settings-row"><span><strong>Email sending</strong><small>Resend</small></span><em className={integrations.emailSending?'success-text':'error-text'}>{integrations.emailSending?'Ready':'Needs API key'}</em></div>
+    <div className="settings-row"><span><strong>Inbound email</strong><small>Resend webhook</small></span><em className={integrations.emailInbound?'success-text':'error-text'}>{integrations.emailInbound?'Ready':'Needs webhook secret'}</em></div>
+    <div className="settings-row"><span><strong>SMS sending</strong><small>Twilio</small></span><em className={integrations.smsSending?'success-text':'error-text'}>{integrations.smsSending?'Ready':'Needs Twilio setup'}</em></div>
    </section>
 
    <section className="panel settings-panel">
