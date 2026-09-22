@@ -30,7 +30,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   if (!c[0]) return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
 
   const messages = await sql`
-    select id, direction, body, sent_at
+    select id, direction, body, subject, external_id, sent_at
     from messages
     where conversation_id = ${params.id}
       and organization_id = ${s.organizationId}
@@ -182,8 +182,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const rows = await sql`
-    insert into messages(organization_id, conversation_id, direction, body)
-    values(${s.organizationId}, ${params.id}, 'outbound', ${text})
+    insert into messages(organization_id, conversation_id, direction, body, subject)
+    values(${s.organizationId}, ${params.id}, 'outbound', ${text}, ${c[0].channel === 'email' ? "b.subject?.trim() || 'Message from ' + c[0].organization_name" : 'null'})
     returning id, direction, body, sent_at
   `
 
