@@ -119,8 +119,13 @@ create table if not exists messages (
   conversation_id uuid not null references conversations(id) on delete cascade,
   direction text not null,
   body text not null,
+  subject text,
+  external_id text,
+  metadata jsonb not null default '{}'::jsonb,
   sent_at timestamptz not null default now()
 );
+
+create unique index if not exists messages_external_id_idx on messages(organization_id, external_id) where external_id is not null;
 
 create table if not exists custom_fields (
   id uuid primary key default gen_random_uuid(),
