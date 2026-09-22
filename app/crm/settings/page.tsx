@@ -11,16 +11,22 @@ export default function SettingsPage(){
  const [inviteUrl,setInviteUrl]=useState('')
  const [newStage,setNewStage]=useState('')
  const [saved,setSaved]=useState(false)
+ const [fields,setFields]=useState<any[]>([])
+ const [newField,setNewField]=useState('')
 
  useEffect(()=>{
-  Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites')]).then(async([a,b])=>{
-   const [ad,bd]=await Promise.all([a.json(),b.json()])
+  Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites'),fetch('/api/crm/custom-fields')]).then(async([a,b])=>{
+   const [ad,bd,fd]=await Promise.all([a.json(),b.json(),c.json()])
    if(ad.organization){setOrg(ad.organization);setUsers(ad.users||[]);setStages(ad.stages||[])}
    if(b.ok)setInvites(bd.invites||[])
+   if(c.ok)setFields(fd.fields||[])
   })
  },[])
 
  async function addStage(){if(!newStage.trim())return;const r=await fetch('/api/crm/stages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:newStage})});const d=await r.json();if(r.ok){setStages(p=>[...p,d.stage].sort((a,b)=>a.position-b.position));setNewStage('')}}
+ async function addField(){if(!newField.trim())return;const r=await fetch('/api/crm/custom-fields',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:newField})});const d=await r.json();if(r.ok){setFields(p=>[...p.filter(x=>x.id!==d.field.id),d.field].sort((a,b)=>a.name.localeCompare(b.name)));setNewField('')}}
+ async function removeField(id:string){const r=await fetch('/api/crm/custom-fields?id='+id,{method:'DELETE'});if(r.ok)setFields(p=>p.filter(x=>x.id!==id))}
+
  async function removeStage(id:string){const r=await fetch('/api/crm/stages',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});if(r.ok)setStages(p=>p.filter(x=>x.id!==id))}
 
  async function save(){
@@ -78,6 +84,13 @@ export default function SettingsPage(){
      {inviteUrl&&<div className="invite-result"><strong>Invite link</strong><input readOnly value={inviteUrl}/><small>Send this link to the teammate. It expires in 7 days.</small></div>}
     </div>
     {invites.slice(0,5).map(i=><div className="settings-row" key={i.id}><span className="stage-number">+</span><span><strong>{i.email}</strong><small>{i.accepted_at?'Accepted':'Pending'} · expires {new Date(i.expires_at).toLocaleDateString()}</small></span><em>{i.role}</em></div>)}
+   </section>
+
+   <section className="panel settings-panel">
+    <div className="panel-head"><div><span className="eyebrow">CONTACT DATA</span><h3>Custom fields</h3></div><span className="count-badge">{fields.length}</span></div>
+    <div className="settings-form stage-add"><input value={newField} onChange={e=>setNewField(e.target.value)} placeholder="Field name, e.g. Preferred service" onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addField()}}}/><button className="add-button" onClick={addField}>Add field</button></div>
+    {fields.map(f=><div className="settings-row" key={f.id}><span className="stage-number">Aa</span><span><strong>{f.name}</strong><small>{f.field_key}</small></span><button className="row-delete" onClick={()=>removeField(f.id)}>Delete</button></div>)}
+    {!fields.length&&<div className="soft-empty">No custom fields yet.</div>}
    </section>
 
    <section className="panel settings-panel">
