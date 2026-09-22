@@ -170,13 +170,18 @@ export async function runAutomationJob(jobId: string) {
     if (details.some(item => item.type === 'wait' && item.queuedActions > 0)) status = 'queued'
     await sql`update automation_jobs set status=${status},completed_at=now(),last_error=null where id=${job.id}`
   } catch (error) {
-    status = 'failed'
     const message = error instanceof Error ? error.message : 'Automation action failed'
     details.push({ error: message })
-    await sql`update automation_jobs set status='failed',completed_at=now(),last_error=${message} where id=${job.id}`
+    if (Number(job.attempts || 0) < 3) {
+      status = 'retrying'
+      await sql`update automation_jobs set status='pending',run_at=now()+interval '5 minutes',completed_at=null,last_error=${message} where id=${job.id}`
+    } else {
+      status = 'failed'
+      await sql`update automation_jobs set status='failed',completed_at=now(),last_error=${message} where id=${job.id}`
+    }
   }
 
-  await sql`insert into automation_events(organization_id,automation_id,contact_id,event_type,status,details) values(${job.organization_id},${job.automation_id},${job.contact_id},${job.event_type},${status},${JSON.stringify({ payload: job.payload || {}, actions: details, jobId: job.id })})`
+  await sql`insert into automation_events(organization_id,automation_id,contact_id,event_type,status,details) values(${job.organization_id},${job.automation_id},${job.contact_id},${job.event_type},${status},${JSON.stringify({ payload: job.payload || {}, actions: details, jobId: job.id, attempt: job.attempts })})`
 
   return { status }
 }
