@@ -28,6 +28,8 @@ export default function SettingsPage(){
  async function addField(){if(!newField.trim())return;const r=await fetch('/api/crm/custom-fields',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:newField})});const d=await r.json();if(r.ok){setFields(p=>[...p.filter(x=>x.id!==d.field.id),d.field].sort((a,b)=>a.name.localeCompare(b.name)));setNewField('')}}
  async function removeField(id:string){const r=await fetch('/api/crm/custom-fields?id='+id,{method:'DELETE'});if(r.ok)setFields(p=>p.filter(x=>x.id!==id))}
 
+ async function renameStage(stage:any){const name=String(stage.editName||stage.name).trim();if(!name)return;const r=await fetch('/api/crm/stages',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:stage.id,name,position:stage.position,color:stage.color})});const d=await r.json();if(r.ok)setStages(p=>p.map(x=>x.id===stage.id?{...x,...d.stage,editName:''}:x))}
+
  async function removeStage(id:string){const r=await fetch('/api/crm/stages',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});if(r.ok)setStages(p=>p.filter(x=>x.id!==id))}
 
  async function save(){
@@ -104,7 +106,7 @@ export default function SettingsPage(){
    <section className="panel settings-panel">
     <div className="panel-head"><div><span className="eyebrow">PIPELINE</span><h3>Stages</h3></div></div>
     <div className="settings-form stage-add"><input value={newStage} onChange={e=>setNewStage(e.target.value)} placeholder="New stage name" onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();addStage()}}}/><button className="add-button" onClick={addStage}>Add stage</button></div>
-    {stages.map(s=><div className="settings-row" key={s.id}><span className="stage-number">{s.position}</span><span><strong>{s.name}</strong></span><button className="row-delete" onClick={()=>removeStage(s.id)}>Delete</button></div>)}
+    {stages.map(s=><div className="settings-row" key={s.id}><span className="stage-number">{s.position}</span><span className="stage-edit"><input value={s.editName??s.name} onChange={e=>setStages(p=>p.map(x=>x.id===s.id?{...x,editName:e.target.value}:x))}/></span><button className="text-action" onClick={()=>renameStage(s)}>Save</button><button className="row-delete" onClick={()=>removeStage(s.id)}>Delete</button></div>)}
    </section>
   </div>:<div className="empty-module">Loading workspace...</div>}
  </main>
