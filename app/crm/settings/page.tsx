@@ -15,7 +15,7 @@ export default function SettingsPage(){
  const [newField,setNewField]=useState('')
 
  useEffect(()=>{
-  Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites'),fetch('/api/crm/custom-fields')]).then(async([a,b])=>{
+  Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites'),fetch('/api/crm/custom-fields')]).then(async([a,b,c])=>{
    const [ad,bd,fd]=await Promise.all([a.json(),b.json(),c.json()])
    if(ad.organization){setOrg(ad.organization);setUsers(ad.users||[]);setStages(ad.stages||[])}
    if(b.ok)setInvites(bd.invites||[])
