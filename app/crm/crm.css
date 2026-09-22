@@ -22,3 +22,7 @@
 .conversation-preview{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#999;font-size:8px;font-style:normal;max-width:205px}
 .conversation-header{display:flex;align-items:center;justify-content:space-between}
 .conversation-status-button{border:1px solid #d0ccc4;background:#f7f5f0;color:#555;padding:7px 10px;font-size:8px}
+
+.custom-field-row{display:grid;grid-template-columns:140px 1fr;align-items:center;gap:10px;margin-bottom:8px}
+.custom-field-row span{font-size:9px;color:#666}
+.custom-field-row input{height:38px;border:1px solid #d0ccc4;background:#eeece6;padding:0 10px;outline:none;font:inherit;font-size:10px}
