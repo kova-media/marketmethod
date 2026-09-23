@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
   const sql = getDb()
   const [contact, stage] = await Promise.all([
     sql`select id,status from contacts where id=${contactId} and organization_id=${s.organizationId} limit 1`,
-    sql`select id,name from pipeline_stages where organization_id=${s.organizationId} and (id::text=${status} or slug=${status} or name=${status}) limit 1`
+    sql`select id,name from pipeline_stages where organization_id=${s.organizationId} and (id::text=${status} or name=${status}) limit 1`
   ])
   if (!contact[0]) return NextResponse.json({ error: 'Contact not found' }, { status: 404 })
   if (!stage[0]) return NextResponse.json({ error: 'Invalid pipeline stage' }, { status: 400 })
