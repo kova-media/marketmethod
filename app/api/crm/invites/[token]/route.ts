@@ -26,9 +26,9 @@ export async function POST(req:NextRequest,{params}:{params:{token:string}}){
  const token=String(params.token||'')
  if(!token||token.length>200)return NextResponse.json({error:'Invite not found'},{status:404})
  const tokenHash=createHash('sha256').update(token).digest('hex')
- const rows=await sql`select id,email,role,organization_id,expires_at,accepted_at from user_invites where (token_hash=${tokenHash} or token=${token}) limit 1`
- if(!rows[0])return NextResponse.json({error:'Invite not found'},{status:404})
- const invite=rows[0]
+ const inviteRows=await sql`select id,email,role,organization_id,expires_at,accepted_at from user_invites where (token_hash=${tokenHash} or token=${token}) limit 1`
+ if(!inviteRows[0])return NextResponse.json({error:'Invite not found'},{status:404})
+ const invite=inviteRows[0]
  if(invite.accepted_at||new Date(invite.expires_at).getTime()<Date.now())return NextResponse.json({error:'This invite is no longer valid.'},{status:410})
  const existing=await sql`select id from users where organization_id=${invite.organization_id} and lower(email)=lower(${invite.email}) limit 1`
  if(existing[0])return NextResponse.json({error:'An account with this email already exists.'},{status:409})
