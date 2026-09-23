@@ -1,9 +1,9 @@
-name: CRM v2 Build Diagnostics
+name: CRM Build Diagnostics
 
 on:
   push:
     branches:
-      - crm-v2
+      - main
   workflow_dispatch:
 
 jobs:
@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
       - run: npm install
       - run: npx tsc --noEmit
       - run: npm run build
