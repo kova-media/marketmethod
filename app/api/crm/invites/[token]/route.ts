@@ -25,9 +25,23 @@ export async function POST(req:NextRequest,{params}:{params:{token:string}}){
  if(invite.accepted_at||new Date(invite.expires_at).getTime()<Date.now())return NextResponse.json({error:'This invite is no longer valid.'},{status:410})
  const existing=await sql`select id from users where organization_id=${invite.organization_id} and lower(email)=lower(${invite.email}) limit 1`
  if(existing[0])return NextResponse.json({error:'An account with this email already exists.'},{status:409})
- const claimed=await sql`update user_invites set accepted_at=now() where id=${invite.id} and accepted_at is null and expires_at>now() returning id`
- if(!claimed[0])return NextResponse.json({error:'This invite has already been accepted or expired.'},{status:410})
- const user=await sql`insert into users(organization_id,email,name,role,password_hash) values(${invite.organization_id},lower(${invite.email}),${name},${invite.role},${hashPassword(password)}) returning id,email,name,role`
- await createSession(user[0].id,invite.organization_id)
- return NextResponse.json({user:user[0]},{status:201})
+ const passwordHash=hashPassword(password)
+ const rows=await sql`
+   with claimed as (
+     update user_invites
+     set accepted_at=now()
+     where id=${invite.id}
+       and accepted_at is null
+       and expires_at>now()
+     returning organization_id,email,role
+   )
+   insert into users(organization_id,email,name,role,password_hash)
+   select organization_id,lower(email),${name},role,${passwordHash}
+   from claimed
+   returning id,email,name,role,organization_id
+ `
+ if(!rows[0])return NextResponse.json({error:'This invite has already been accepted or expired.'},{status:410})
+ const user=rows[0]
+ await createSession(user.id,user.organization_id)
+ return NextResponse.json({user:{id:user.id,email:user.email,name:user.name,role:user.role}},{status:201})
 }
