@@ -35,8 +35,8 @@ export default function Dashboard(){
 
  const filtered=useMemo(()=>contacts.filter(c=>[c.first_name,c.last_name,c.email,c.company].filter(Boolean).join(' ').toLowerCase().includes(query.toLowerCase())),[contacts,query])
  const openTasks=tasks.filter(t=>!t.completed_at).length
- const upcoming=appointments.filter(a=>a.status==='scheduled').length
- const stageCount=(s:string)=>contacts.filter(c=>(c.status||'new')===s).length
+ const upcoming=appointments.filter(a=>a.status==='scheduled'&&new Date(a.starts_at).getTime()>=Date.now()).length
+ const stageCount=(s:string)=>contacts.filter(c=>String(c.status||'new').toLowerCase()===s).length
 
  async function add(){
   setSaving(true)
