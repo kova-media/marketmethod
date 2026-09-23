@@ -8,7 +8,7 @@ const allowed=['contact_created','status_changed','appointment_created','appoint
 if(!allowed.includes(String(b.triggerType)))return NextResponse.json({error:'Invalid automation trigger'},{status:400});
 if(String(b.name).trim().length>200)return NextResponse.json({error:'Automation name is too long'},{status:400});
 if(!Array.isArray(b.conditions)||!Array.isArray(b.actions)||b.conditions.length>20||b.actions.length>20)return NextResponse.json({error:'Automation conditions or actions are invalid'},{status:400});
-const allowedConditionFields=['status','previousStatus','type','source'];
+const allowedConditionFields=['status','previousStatus','type','source','serviceType','mileage','nextRecommendedDate'];
 for(const condition of b.conditions){
  if(!condition||typeof condition!=='object'||!allowedConditionFields.includes(String(condition.field)))return NextResponse.json({error:'Invalid automation condition'},{status:400});
  if(String(condition.value??'').length>200)return NextResponse.json({error:'Automation condition value is too long'},{status:400});
