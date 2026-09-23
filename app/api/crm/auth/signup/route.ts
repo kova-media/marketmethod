@@ -34,7 +34,13 @@ export async function POST(request: NextRequest) {
 
     if (existingOrg[0]) {
       organizationId = existingOrg[0].id
-      if (isMarketMethod) await sql`update organizations set sender_name=coalesce(sender_name,'Market Method'),sender_email=coalesce(sender_email,'notifications@marketmethod.co') where id=${organizationId}`
+      if (isMarketMethod) {
+        const existingMarketMethodUser = await sql`select id from users where organization_id=${organizationId} limit 1`
+        if (existingMarketMethodUser[0]) {
+          return NextResponse.json({ error: 'This workspace is already initialized. Use an invitation to join it.' }, { status: 409 })
+        }
+        await sql`update organizations set sender_name=coalesce(sender_name,'Market Method'),sender_email=coalesce(sender_email,'notifications@marketmethod.co') where id=${organizationId}`
+      }
     } else {
       const orgRows = await sql`insert into organizations(name,slug,industry,primary_color,sender_name,sender_email) values(${businessName},${slug},${body.industry?.trim() || null},'#C7ED63',${isMarketMethod?'Market Method':null},${isMarketMethod?'notifications@marketmethod.co':null}) returning id`
       organizationId = orgRows[0].id
@@ -61,8 +67,7 @@ export async function POST(request: NextRequest) {
 
     await createSession(userRows[0].id, organizationId)
     return NextResponse.json({ user: userRows[0] }, { status: 201 })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to create workspace'
-    return NextResponse.json({ error: message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Unable to create workspace' }, { status: 500 })
   }
 }
