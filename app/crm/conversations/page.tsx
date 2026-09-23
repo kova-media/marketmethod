@@ -27,6 +27,7 @@ export default function ConversationsPage() {
     if (!id || selected || !items.length) return
     const match = items.find(item => item.contact_id === id)
     if (match) open(match)
+    else { setContactId(id); setShow(true) }
   }, [items, selected])
 
   async function load() {
