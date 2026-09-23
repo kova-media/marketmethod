@@ -11,6 +11,8 @@ export async function GET(req:NextRequest){
  const sql=getDb()
  const tags=await sql`select id,name from tags where organization_id=${s.organizationId} order by name`
  if(!contactId)return NextResponse.json({tags})
+ const contact=await sql`select id from contacts where id=${contactId} and organization_id=${s.organizationId} limit 1`
+ if(!contact[0])return NextResponse.json({error:'Contact not found'},{status:404})
  const assigned=await sql`select t.id,t.name from tags t join contact_tags ct on ct.tag_id=t.id where t.organization_id=${s.organizationId} and ct.contact_id=${contactId} order by t.name`
  return NextResponse.json({tags,assigned})
 }
@@ -42,6 +44,10 @@ export async function DELETE(req:NextRequest){
  const b=await req.json()
  if(!b.contactId||!b.tagId)return NextResponse.json({error:'Contact and tag are required'},{status:400})
  const sql=getDb()
- await sql`delete from contact_tags where contact_id=${b.contactId} and tag_id in (select id from tags where id=${b.tagId} and organization_id=${s.organizationId})`
+ const contact=await sql`select id from contacts where id=${b.contactId} and organization_id=${s.organizationId} limit 1`
+ if(!contact[0])return NextResponse.json({error:'Contact not found'},{status:404})
+ const tag=await sql`select id from tags where id=${b.tagId} and organization_id=${s.organizationId} limit 1`
+ if(!tag[0])return NextResponse.json({error:'Tag not found'},{status:404})
+ await sql`delete from contact_tags where contact_id=${b.contactId} and tag_id=${b.tagId}`
  return NextResponse.json({success:true})
 }
