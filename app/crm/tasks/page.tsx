@@ -55,14 +55,14 @@ export default function TasksPage(){
  endOfToday.setDate(endOfToday.getDate()+1)
 
  const openCount=tasks.filter(t=>!t.completed_at).length
- const overdueCount=tasks.filter(t=>!t.completed_at&&t.due_at&&new Date(t.due_at).getTime()<now).length
- const todayCount=tasks.filter(t=>!t.completed_at&&t.due_at&&new Date(t.due_at)>=startOfToday&&new Date(t.due_at)<endOfToday).length
+ const overdueCount=tasks.filter(t=>!t.completed_at&&t.due_at&&new Date(t.due_at || '').getTime()<now).length
+ const todayCount=tasks.filter(t=>!t.completed_at&&t.due_at&&new Date(t.due_at || '')>=startOfToday&&new Date(t.due_at || '')<endOfToday).length
 
  const visible=useMemo(()=>{
   return tasks.filter(t=>{
    if(filter==='completed')return Boolean(t.completed_at)
-   if(filter==='overdue')return !t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at).getTime()<Date.now()
-   if(filter==='today')return !t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at)>=startOfToday&&new Date(t.due_at)<endOfToday
+   if(filter==='overdue')return !t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at || '').getTime()<Date.now()
+   if(filter==='today')return !t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at || '')>=startOfToday&&new Date(t.due_at || '')<endOfToday
    return !t.completed_at
   })
  },[tasks,filter])
@@ -129,12 +129,12 @@ function TaskColumn({title,items,complete}:{title:string,items:Task[],complete:(
  return <section className="task-column">
   <header><h2>{title}</h2><span>{items.length}</span></header>
   {items.map(t=>{
-   const overdue=!t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at).getTime()<Date.now()
+   const overdue=!t.completed_at&&Boolean(t.due_at)&&new Date(t.due_at || '').getTime()<Date.now()
    return <article className={'task-row-card '+(t.completed_at?'done':'')} key={t.id}>
     <button className="circle-check" onClick={()=>complete(t.id,!t.completed_at)}>{t.completed_at&&<Check size={13}/>}</button>
     <div>
      <strong>{t.title}</strong>
-     <small>{[t.first_name,t.last_name].filter(Boolean).join(' ')||'General task'}{t.assigned_name?' · '+t.assigned_name:''}{t.due_at?' · '+(overdue?'Overdue · ':'')+new Date(t.due_at).toLocaleString():''}</small>
+     <small>{[t.first_name,t.last_name].filter(Boolean).join(' ')||'General task'}{t.assigned_name?' · '+t.assigned_name:''}{t.due_at?' · '+(overdue?'Overdue · ':'')+new Date(t.due_at || '').toLocaleString():''}</small>
      {t.description&&<p>{t.description}</p>}
     </div>
    </article>
