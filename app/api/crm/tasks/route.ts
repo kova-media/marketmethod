@@ -17,14 +17,18 @@ export async function POST(req:NextRequest){
  const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
- if(!b.title)return NextResponse.json({error:'Title is required'},{status:400})
+ const title=String(b.title||'').trim()
+ if(!title)return NextResponse.json({error:'Title is required'},{status:400})
+ if(title.length>500)return NextResponse.json({error:'Task title is too long'},{status:400})
+ if(b.description!==undefined&&b.description!==null&&String(b.description).length>10000)return NextResponse.json({error:'Task description is too long'},{status:400})
+ if(b.dueAt&&Number.isNaN(new Date(b.dueAt).getTime()))return NextResponse.json({error:'Invalid due date'},{status:400})
  const sql=getDb()
  const assignedTo=b.assignedTo||s.userId
  const validUser=await sql`select id from users where id=${assignedTo} and organization_id=${s.organizationId} limit 1`
  if(!validUser[0])return NextResponse.json({error:'Assigned user not found'},{status:400})
  const validContact=b.contactId?await sql`select id from contacts where id=${b.contactId} and organization_id=${s.organizationId} limit 1`:null
  if(b.contactId&&!validContact?.[0])return NextResponse.json({error:'Contact not found'},{status:400})
- const rows=await sql`insert into tasks(organization_id,contact_id,assigned_to,title,description,due_at) values(${s.organizationId},${b.contactId||null},${assignedTo},${b.title},${b.description||null},${b.dueAt||null}) returning *`
+ const rows=await sql`insert into tasks(organization_id,contact_id,assigned_to,title,description,due_at) values(${s.organizationId},${b.contactId||null},${assignedTo},${title},${b.description?.trim()||null},${b.dueAt||null}) returning *`
  return NextResponse.json({task:rows[0]},{status:201})
 }
 
