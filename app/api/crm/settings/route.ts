@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { ensureSchema } from '../../../../lib/schema'
 
 function validEmail(value: unknown) {
@@ -9,7 +9,7 @@ function validEmail(value: unknown) {
 
 export async function GET() {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const currentUser = (await sql`select id,name,email,role from users where id=${s.userId} and organization_id=${s.organizationId} limit 1`)[0]
@@ -24,7 +24,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const user = await sql`select role from users where id=${s.userId} and organization_id=${s.organizationId} limit 1`
