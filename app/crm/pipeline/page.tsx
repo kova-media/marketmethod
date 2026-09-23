@@ -19,7 +19,7 @@ export default function PipelinePage(){
   <header className="module-top"><div><a href="/crm/dashboard" className="back-link"><ChevronLeft size={15}/> Dashboard</a><span className="eyebrow">SALES PIPELINE</span><h1>Pipeline</h1><p>Move leads forward as conversations happen.</p></div><a className="add-button" href="/crm/contacts"><Plus size={17}/> Add contact</a></header>
   <section className="module-toolbar"><label className="search"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search pipeline..."/></label><span className="result-count">{filtered.length} contacts</span></section>
   <div className="kanban">{cols.map(s=>{
-   const inStage=filtered.filter(c=>(c.status||'new')===s.key)
+   const inStage=filtered.filter(c=>String(c.status||'new').toLowerCase()===s.key)
    return <section className="kanban-col" key={s.id}><header><div><strong>{s.name}</strong><small>{inStage.length} contacts</small></div></header><div className="kanban-cards">
     {inStage.map(c=><article className="kanban-card" key={c.id}><a href="/crm/contacts"><strong>{c.first_name} {c.last_name||''}</strong><small>{c.company||c.email||'No details'}</small></a><select value={c.status||'new'} onChange={e=>move(c.id,e.target.value)}>{cols.map(x=><option key={x.id} value={x.key}>{x.name}</option>)}</select></article>)}
     {!inStage.length&&<div className="kanban-empty">No contacts</div>}
