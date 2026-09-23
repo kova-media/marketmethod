@@ -60,6 +60,7 @@ const statements = [
   `create index if not exists custom_field_values_contact_idx on custom_field_values(contact_id)`,
   `create index if not exists automation_events_org_created_idx on automation_events(organization_id,created_at desc)`,
   `create index if not exists automation_jobs_org_status_run_idx on automation_jobs(organization_id,status,run_at)`,
+  `create index if not exists automation_jobs_running_started_idx on automation_jobs(status,started_at) where status='running'`,
 ]
 
 let initialized = false
