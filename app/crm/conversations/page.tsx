@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, MessageSquare, Plus, Send, X } from 'lucide-react'
 
 export default function ConversationsPage() {
@@ -14,6 +14,8 @@ export default function ConversationsPage() {
   const [show, setShow] = useState(false)
   const [contactId, setContactId] = useState('')
   const [channel, setChannel] = useState('sms')
+  const [query, setQuery] = useState('')
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     load()
@@ -130,6 +132,17 @@ export default function ConversationsPage() {
   }
 
   const unreadTotal = items.reduce((sum, item) => sum + Number(item.unread_count || 0), 0)
+  const visibleItems = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return items.filter(c => {
+      if (filter === 'unread' && Number(c.unread_count || 0) === 0) return false
+      if (filter === 'open' && c.status !== 'open') return false
+      if (filter === 'closed' && c.status !== 'closed') return false
+      if (!q) return true
+      const name = [c.first_name, c.last_name].filter(Boolean).join(' ').toLowerCase()
+      return name.includes(q) || String(c.last_message || '').toLowerCase().includes(q)
+    })
+  }, [items, query, filter])
 
   return (
     <main className="module-page">
@@ -153,7 +166,22 @@ export default function ConversationsPage() {
 
       <div className="conversation-layout">
         <aside className="conversation-list">
-          {items.map(c => (
+          <div className="conversation-filters">
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search conversations" />
+            <div className="filter-pills">
+              {[
+                ['all', 'All'],
+                ['unread', 'Unread'],
+                ['open', 'Open'],
+                ['closed', 'Closed']
+              ].map(([value, label]) => (
+                <button key={value} className={filter === value ? 'selected' : ''} onClick={() => setFilter(value)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {visibleItems.map(c => (
             <button
               key={c.id}
               className={selected?.id === c.id ? 'selected' : ''}
@@ -184,8 +212,8 @@ export default function ConversationsPage() {
             </button>
           ))}
 
-          {!items.length && (
-            <div className="soft-empty">No conversations yet.</div>
+          {!visibleItems.length && (
+            <div className="soft-empty">{items.length ? 'No conversations match these filters.' : 'No conversations yet.'}</div>
           )}
         </aside>
 
