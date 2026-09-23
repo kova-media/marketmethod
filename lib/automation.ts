@@ -52,6 +52,8 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
     const fromEmail = organization?.sender_email
     if (!to) throw new Error('No email recipient is available')
     if (!fromEmail) throw new Error('Workspace sender email is not configured')
+    const subject = resolveValue(action.subject, context)
+    const body = resolveValue(action.body, context)
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
@@ -59,12 +61,48 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
         from: (organization?.sender_name || organization?.name || 'Market Method') + ' <' + fromEmail + '>',
         to: [to],
         reply_to: organization?.reply_to_email || fromEmail,
-        subject: resolveValue(action.subject, context),
-        text: resolveValue(action.body, context)
+        subject,
+        text: body
       }),
     })
     if (!response.ok) throw new Error('Email action failed: ' + await response.text())
-    return { type: action.type, to }
+    const emailResult = await response.json().catch(() => ({}))
+    const providerMessageId = emailResult.id || null
+
+    if (contactId) {
+      let conversation = (await sql`
+        select id
+        from conversations
+        where organization_id=${organizationId}
+          and contact_id=${contactId}
+          and channel='email'
+          and status='open'
+        order by updated_at desc
+        limit 1
+      `)[0]
+
+      if (!conversation) {
+        conversation = (await sql`
+          insert into conversations(organization_id,contact_id,channel,status)
+          values(${organizationId},${contactId},'email','open')
+          returning id
+        `)[0]
+      }
+
+      await sql`
+        insert into messages(organization_id,conversation_id,direction,body,subject,external_id,metadata)
+        values(${organizationId},${conversation.id},'outbound',${body},${subject},${providerMessageId},${JSON.stringify({provider:'email',source:'automation'})})
+      `
+
+      await sql`
+        update conversations
+        set updated_at=now(), unread_count=0
+        where id=${conversation.id}
+          and organization_id=${organizationId}
+      `
+    }
+
+    return { type: action.type, to, providerMessageId }
   }
 
   if (action.type === 'send_sms' && action.body) {
@@ -75,14 +113,51 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
     if (!sid || !token) throw new Error('Twilio credentials are not configured')
     if (!from) throw new Error('Workspace SMS number is not configured')
     if (!to) throw new Error('No SMS recipient is available')
+    const body = resolveValue(action.body, context)
     const auth = Buffer.from(sid + ':' + token).toString('base64')
     const response = await fetch('https://api.twilio.com/2010-04-01/Accounts/' + sid + '/Messages.json', {
       method: 'POST',
       headers: { Authorization: 'Basic ' + auth, 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ To: to, From: from, Body: resolveValue(action.body, context) }).toString()
+      body: new URLSearchParams({ To: to, From: from, Body: body }).toString()
     })
     if (!response.ok) throw new Error('SMS action failed: ' + await response.text())
-    return { type: action.type, to }
+    const smsResult = await response.json().catch(() => ({}))
+    const providerMessageId = smsResult.sid || null
+
+    if (contactId) {
+      let conversation = (await sql`
+        select id
+        from conversations
+        where organization_id=${organizationId}
+          and contact_id=${contactId}
+          and channel='sms'
+          and status='open'
+        order by updated_at desc
+        limit 1
+      `)[0]
+
+      if (!conversation) {
+        conversation = (await sql`
+          insert into conversations(organization_id,contact_id,channel,status)
+          values(${organizationId},${contactId},'sms','open')
+          returning id
+        `)[0]
+      }
+
+      await sql`
+        insert into messages(organization_id,conversation_id,direction,body,external_id,metadata)
+        values(${organizationId},${conversation.id},'outbound',${body},${providerMessageId},${JSON.stringify({provider:'sms',source:'automation'})})
+      `
+
+      await sql`
+        update conversations
+        set updated_at=now(), unread_count=0
+        where id=${conversation.id}
+          and organization_id=${organizationId}
+      `
+    }
+
+    return { type: action.type, to, providerMessageId }
   }
 
   return { type: action.type, skipped: true }
