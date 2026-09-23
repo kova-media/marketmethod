@@ -20,6 +20,7 @@ export default function TasksPage(){
  const [show,setShow]=useState(false)
  const [filter,setFilter]=useState('open')
  const [form,setForm]=useState({title:'',description:'',contactId:'',assignedTo:'',dueAt:''})
+ const [error,setError]=useState('')
 
  useEffect(()=>{load()},[])
 
@@ -33,13 +34,14 @@ export default function TasksPage(){
 
  async function add(e:FormEvent){
   e.preventDefault()
+  setError('')
   const r=await fetch('/api/crm/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)})
   const d=await r.json()
   if(r.ok){
    setTasks(p=>[d.task,...p])
    setShow(false)
    setForm({title:'',description:'',contactId:'',assignedTo:'',dueAt:''})
-  }
+  } else setError(d.error||'Task could not be created.')
  }
 
  async function complete(id:string,completed:boolean){
@@ -106,6 +108,7 @@ export default function TasksPage(){
     <button type="button" className="modal-close" onClick={()=>setShow(false)}><X size={18}/></button>
     <span className="eyebrow">FOLLOW-UP</span>
     <h2>Create a task</h2>
+    {error&&<div className="form-error">{error}</div>}
     <div className="modal-form">
      <input placeholder="Task title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required/>
      <select value={form.contactId} onChange={e=>setForm({...form,contactId:e.target.value})}>
