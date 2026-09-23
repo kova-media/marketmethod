@@ -10,11 +10,20 @@ function twilioSignatureIsValid(req: NextRequest, params: Record<string, string>
   const signature = req.headers.get('x-twilio-signature')
   if (!signature) return false
 
-  const proto = req.headers.get('x-forwarded-proto') || 'https'
-  const host = req.headers.get('x-forwarded-host') || req.headers.get('host')
-  if (!host) return false
-
-  const url = proto + '://' + host + '/api/webhooks/twilio'
+  const configuredUrl = process.env.CRM_APP_URL
+  let url: string
+  if (configuredUrl) {
+    try {
+      url = new URL('/api/webhooks/twilio', configuredUrl).toString()
+    } catch {
+      return false
+    }
+  } else {
+    const proto = req.headers.get('x-forwarded-proto') || 'https'
+    const host = req.headers.get('x-forwarded-host') || req.headers.get('host')
+    if (!host) return false
+    url = proto + '://' + host + '/api/webhooks/twilio'
+  }
   const data = Object.keys(params)
     .sort()
     .reduce((value, key) => value + key + params[key], url)
