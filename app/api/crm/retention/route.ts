@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthenticatedSession } from '../../../../lib/authenticated'
+import { getSession } from '../../../../lib/auth'
 import { getDb } from '../../../../lib/db'
 import { ensureSchema } from '../../../../lib/schema'
 
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   await ensureSchema()
-  const session = await getAuthenticatedSession()
+  const session = getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const rows = await sql`select c.id,c.first_name,c.last_name,c.email,c.phone,c.company,c.type,c.status,c.updated_at,coalesce(max(a.created_at),c.updated_at) as last_activity_at,floor(extract(epoch from (now() - coalesce(max(a.created_at),c.updated_at))) / 86400)::int as inactive_days from contacts c left join activities a on a.contact_id=c.id and a.organization_id=c.organization_id where c.organization_id=${session.organizationId} and c.type='customer' group by c.id having coalesce(max(a.created_at),c.updated_at) < now() - interval '90 days' order by coalesce(max(a.created_at),c.updated_at) asc limit 25`
@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   await ensureSchema()
-  const session = await getAuthenticatedSession()
+  const session = getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await req.json()
   const contactId = String(body.contactId || '')
