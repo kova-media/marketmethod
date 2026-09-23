@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { ensureSchema } from '../../../../lib/schema'
 import { runAutomations } from '../../../../lib/automation'
 
@@ -8,7 +8,7 @@ const STATUSES = ['scheduled', 'completed', 'cancelled', 'no_show']
 
 export async function GET() {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const rows = await sql`select a.id,a.title,a.starts_at,a.ends_at,a.status,a.notes,a.contact_id,c.first_name,c.last_name from appointments a left join contacts c on c.id=a.contact_id and c.organization_id=a.organization_id where a.organization_id=${s.organizationId} order by a.starts_at limit 250`
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const b = await req.json()
   if (!b.title || !b.startsAt) return NextResponse.json({ error: 'Title and start time are required' }, { status: 400 })
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const b = await req.json()
   const status = String(b.status || '').trim()
