@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { ensureSchema } from '../../../../lib/schema'
 
 export async function GET(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const sql = getDb()
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const sql = getDb()
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const b = await req.json()
@@ -130,7 +130,7 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const sql = getDb()
