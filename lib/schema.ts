@@ -80,7 +80,14 @@ export async function ensureSchema() {
   if (!initializationPromise) {
     initializationPromise = (async () => {
       const sql: any = getDb()
-      for (const statement of statements) await sql.query(statement)
+      for (const statement of statements) {
+        try {
+          await sql.query(statement)
+        } catch (error: any) {
+          if (error?.code === '23505' && error?.constraint === 'pg_type_typname_nsp_index') continue
+          throw error
+        }
+      }
       initialized = true
     })().catch(error => {
       initializationPromise = null
