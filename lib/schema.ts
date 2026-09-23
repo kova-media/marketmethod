@@ -46,8 +46,10 @@ const statements = [
   `create table if not exists properties (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, contact_id uuid not null references contacts(id) on delete cascade, name text, address text, city text, state text, postal_code text, notes text, created_at timestamptz not null default now())`,
   `create table if not exists service_history (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, contact_id uuid not null references contacts(id) on delete cascade, property_id uuid references properties(id) on delete cascade, service_date date not null default current_date, service_type text not null, amount numeric(12,2), notes text, next_recommended_date date, created_at timestamptz not null default now())`,
   `create table if not exists automation_events (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, automation_id uuid references automations(id) on delete cascade, contact_id uuid references contacts(id) on delete cascade, event_type text not null, status text not null default 'completed', details jsonb not null default '{}'::jsonb, created_at timestamptz not null default now())`,
-  `create table if not exists automation_jobs (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, automation_id uuid references automations(id) on delete cascade, contact_id uuid references contacts(id) on delete cascade, event_type text not null, actions jsonb not null default '[]'::jsonb, payload jsonb not null default '{}'::jsonb, run_at timestamptz not null, status text not null default 'pending', attempts integer not null default 0, last_error text, created_at timestamptz not null default now(), completed_at timestamptz)`,
+  `create table if not exists automation_jobs (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, automation_id uuid references automations(id) on delete cascade, contact_id uuid references contacts(id) on delete cascade, event_type text not null, actions jsonb not null default '[]'::jsonb, payload jsonb not null default '{}'::jsonb, run_at timestamptz not null, status text not null default 'pending', attempts integer not null default 0, last_error text, created_at timestamptz not null default now(), completed_at timestamptz, parent_job_id uuid references automation_jobs(id) on delete set null, wait_step integer)`,
   `alter table automation_jobs add column if not exists started_at timestamptz`,
+  `alter table automation_jobs add column if not exists parent_job_id uuid references automation_jobs(id) on delete set null`,
+  `alter table automation_jobs add column if not exists wait_step integer`,
   `create index if not exists automation_jobs_due_idx on automation_jobs(status,run_at)`,
   `create index if not exists activities_org_created_idx on activities(organization_id,created_at desc)`,
   `create index if not exists activities_org_contact_created_idx on activities(organization_id,contact_id,created_at desc)`,
@@ -67,6 +69,7 @@ const statements = [
   `create index if not exists automation_events_org_created_idx on automation_events(organization_id,created_at desc)`,
   `create index if not exists automation_jobs_org_status_run_idx on automation_jobs(organization_id,status,run_at)`,
   `create index if not exists automation_jobs_running_started_idx on automation_jobs(status,started_at) where status='running'`,
+  `create unique index if not exists automation_jobs_parent_wait_idx on automation_jobs(parent_job_id,wait_step) where parent_job_id is not null and wait_step is not null`,
 ]
 
 let initialized = false
