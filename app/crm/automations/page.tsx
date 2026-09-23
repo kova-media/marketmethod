@@ -3,7 +3,7 @@
 import {FormEvent,useEffect,useState} from 'react'
 import {ChevronLeft,Plus,X,Trash2} from 'lucide-react'
 
-const triggers=[['contact_created','New contact created'],['status_changed','Pipeline status changes'],['appointment_completed','Appointment completed']]
+const triggers=[['contact_created','New contact created'],['status_changed','Pipeline status changes'],['appointment_created','Appointment created'],['appointment_completed','Appointment completed']]
 const conditionFields=[
  ['status','Status'],
  ['previousStatus','Previous status'],
