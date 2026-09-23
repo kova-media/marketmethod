@@ -20,10 +20,16 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const firstName = String(body.firstName || '').trim()
   if (!firstName) return NextResponse.json({ error: 'First name is required' }, { status: 400 })
+  if (firstName.length > 200) return NextResponse.json({ error: 'First name is too long' }, { status: 400 })
 
   const sql = getDb()
   const email = body.email?.trim() || null
   const phone = body.phone?.trim() || null
+  if (email && (email.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
+  if (phone && phone.length > 50) return NextResponse.json({ error: 'Phone number is too long' }, { status: 400 })
+  for (const [key, max] of [['lastName',200],['company',300],['source',100],['status',100],['notes',10000]] as const) {
+    if (body[key] !== undefined && body[key] !== null && String(body[key]).length > max) return NextResponse.json({ error: key + ' is too long' }, { status: 400 })
+  }
 
   if (email) {
     const existing = await sql`select id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at from contacts where organization_id=${session.organizationId} and lower(email)=lower(${email}) limit 1`
@@ -55,6 +61,13 @@ export async function PATCH(request: NextRequest) {
   const before = current[0]
   const email = body.email !== undefined ? body.email?.trim() || null : before.email
   const phone = body.phone !== undefined ? body.phone?.trim() || null : before.phone
+  const firstName = body.firstName !== undefined ? body.firstName?.trim() || '' : before.first_name
+  if (!firstName || firstName.length > 200) return NextResponse.json({ error: 'A valid first name is required' }, { status: 400 })
+  if (email && (email.length > 320 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
+  if (phone && phone.length > 50) return NextResponse.json({ error: 'Phone number is too long' }, { status: 400 })
+  for (const [key, max] of [['lastName',200],['company',300],['notes',10000]] as const) {
+    if (body[key] !== undefined && body[key] !== null && String(body[key]).length > max) return NextResponse.json({ error: key + ' is too long' }, { status: 400 })
+  }
 
   if (email) {
     const existing = await sql`select id from contacts where organization_id=${session.organizationId} and lower(email)=lower(${email}) and id<>${body.id} limit 1`
@@ -67,7 +80,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const nextStatus = body.status ?? before.status
-  const rows = await sql`update contacts set first_name=${body.firstName !== undefined ? body.firstName?.trim() || null : before.first_name},last_name=${body.lastName !== undefined ? body.lastName?.trim() || null : before.last_name},email=${email},phone=${phone},company=${body.company !== undefined ? body.company?.trim() || null : before.company},type=${body.type ?? before.type},status=${nextStatus},notes=${body.notes !== undefined ? body.notes?.trim() || null : before.notes},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
+  const rows = await sql`update contacts set first_name=${firstName},last_name=${body.lastName !== undefined ? body.lastName?.trim() || null : before.last_name},email=${email},phone=${phone},company=${body.company !== undefined ? body.company?.trim() || null : before.company},type=${body.type ?? before.type},status=${nextStatus},notes=${body.notes !== undefined ? body.notes?.trim() || null : before.notes},updated_at=now() where id=${body.id} and organization_id=${session.organizationId} returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
   await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${body.id},${session.userId},'contact_updated','Customer updated','Contact details updated.')`
   if (body.status !== undefined && body.status !== before.status) await runAutomations(session.organizationId, 'status_changed', body.id, { status: nextStatus, previousStatus: before.status })
   return NextResponse.json({ contact: rows[0] })
