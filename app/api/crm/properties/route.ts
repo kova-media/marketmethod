@@ -1,11 +1,11 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
-import {getAuthenticatedSession} from '../../../../lib/authenticated'
+import {getSession} from '../../../../lib/auth'
 import {ensureSchema} from '../../../../lib/schema'
 
 export async function GET(req:NextRequest){
  await ensureSchema()
- const s=await getAuthenticatedSession()
+ const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const contactId=new URL(req.url).searchParams.get('contactId')
  const sql=getDb()
@@ -21,7 +21,7 @@ export async function GET(req:NextRequest){
 
 export async function POST(req:NextRequest){
  await ensureSchema()
- const s=await getAuthenticatedSession()
+ const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
  const address=String(b.address||'').trim()
