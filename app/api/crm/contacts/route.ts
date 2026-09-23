@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { ensureSchema } from '../../../../lib/schema'
 import { runAutomations } from '../../../../lib/automation'
 
 export async function GET() {
   await ensureSchema()
-  const session = getSession()
+  const session = await getAuthenticatedSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const rows = await sql`select id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at from contacts where organization_id=${session.organizationId} order by created_at desc limit 500`
@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   await ensureSchema()
-  const session = getSession()
+  const session = await getAuthenticatedSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await request.json()
   const firstName = String(body.firstName || '').trim()
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   await ensureSchema()
-  const session = getSession()
+  const session = await getAuthenticatedSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await request.json()
   if (!body.id) return NextResponse.json({ error: 'Contact id is required' }, { status: 400 })
