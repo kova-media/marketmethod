@@ -44,10 +44,10 @@ export default function TasksPage(){
   } else setError(d.error||'Task could not be created.')
  }
 
- async function complete(id:string,completed:boolean){
+ async function complete(id:string,completed:boolean){setError('');
   const r=await fetch('/api/crm/tasks',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,completed})})
   const d=await r.json()
-  if(r.ok)setTasks(p=>p.map(t=>t.id===id?{...t,...d.task}:t))
+  if(r.ok)setTasks(p=>p.map(t=>t.id===id?{...t,...d.task}:t));else setError(d.error||'Task could not be updated.')
  }
 
  const now=Date.now()
