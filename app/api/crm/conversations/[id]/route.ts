@@ -127,6 +127,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (!apiKey) return NextResponse.json({ error: 'Email sending is not configured.' }, { status: 503 })
     if (!c[0].email) return NextResponse.json({ error: 'This contact does not have an email address.' }, { status: 400 })
     const senderEmail = c[0].sender_email || 'notifications@marketmethod.co'
+    const inbound = (await sql`select metadata from messages where conversation_id=${params.id} and organization_id=${s.organizationId} and direction='inbound' and metadata->>'messageId' is not null order by sent_at desc limit 1`)[0]
+    const replyHeaders = inbound?.metadata?.messageId ? { 'In-Reply-To': inbound.metadata.messageId, 'References': inbound.metadata.messageId } : undefined
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -139,7 +141,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         to: [c[0].email],
         reply_to: c[0].reply_to_email || senderEmail,
         subject: b.subject?.trim() || 'Message from ' + c[0].organization_name,
-        text
+        text,
+        ...(replyHeaders ? { headers: replyHeaders } : {})
       })
     })
 
