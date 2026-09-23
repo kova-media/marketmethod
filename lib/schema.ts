@@ -73,12 +73,21 @@ const statements = [
 ]
 
 let initialized = false
+let initializationPromise: Promise<void> | null = null
 
 export async function ensureSchema() {
   if (initialized) return
-  const sql: any = getDb()
-  for (const statement of statements) await sql.query(statement)
-  initialized = true
+  if (!initializationPromise) {
+    initializationPromise = (async () => {
+      const sql: any = getDb()
+      for (const statement of statements) await sql.query(statement)
+      initialized = true
+    })().catch(error => {
+      initializationPromise = null
+      throw error
+    })
+  }
+  await initializationPromise
 }
 
 // CRM schema bootstrap is intentionally idempotent.
