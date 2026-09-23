@@ -40,7 +40,7 @@ export default function SettingsPage(){
    senderName:org.sender_name,senderEmail:org.sender_email,replyToEmail:org.reply_to_email,smsFromNumber:org.sms_from_number
   })})
   if(r.ok){const d=await r.json();setOrg(d.organization);setSaved(true);setTimeout(()=>setSaved(false),1800)} else {const d=await r.json();setMessageError(d.error||'Settings could not be saved.')}}
- }
+
 
  async function invite(){
   if(!inviteEmail.trim())return
