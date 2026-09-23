@@ -33,8 +33,11 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
   const { organizationId, contactId, contact, organization } = context
 
   if (action.type === 'create_task' && action.title) {
-    const dueAt = action.dueDays !== undefined && action.dueDays !== null
-      ? new Date(Date.now() + Math.max(0, Number(action.dueDays)) * 86400000).toISOString()
+    const dueDays = action.dueDays !== undefined && action.dueDays !== null
+      ? Number(action.dueDays)
+      : (action.dueAt !== undefined && action.dueAt !== null ? Number(action.dueAt) : null)
+    const dueAt = dueDays !== null
+      ? new Date(Date.now() + Math.max(0, dueDays) * 86400000).toISOString()
       : null
     await sql`insert into tasks(organization_id,contact_id,title,description,due_at) values(${organizationId},${contactId},${resolveValue(action.title, context)},${action.description ? resolveValue(action.description, context) : null},${dueAt})`
     return { type: action.type, title: action.title }
