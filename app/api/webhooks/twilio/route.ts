@@ -20,7 +20,9 @@ function twilioSignatureIsValid(req: NextRequest, params: Record<string, string>
     .reduce((value, key) => value + key + params[key], url)
 
   const expected = crypto.createHmac('sha1', token).update(data).digest('base64')
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  const actual = Buffer.from(signature)
+  const expectedBuffer = Buffer.from(expected)
+  return actual.length === expectedBuffer.length && crypto.timingSafeEqual(actual, expectedBuffer)
 }
 
 function digits(value: string) {
