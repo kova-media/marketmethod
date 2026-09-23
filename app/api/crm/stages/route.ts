@@ -1,10 +1,10 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
-import {getSession} from '../../../../lib/auth'
+import {getAuthenticatedSession} from '../../../../lib/authauthenticated'
 import {ensureSchema} from '../../../../lib/schema'
 
 async function owner(){
- const s=getSession()
+ const s=await getAuthenticatedSession()
  if(!s)return null
  const sql=getDb()
  const u=await sql`select role from users where id=${s.userId} and organization_id=${s.organizationId} limit 1`
