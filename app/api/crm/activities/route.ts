@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getAuthenticatedSession } from '../../../../lib/authenticated'
+import { getSession } from '../../../../lib/auth'
 import { ensureSchema } from '../../../../lib/schema'
 
 export async function GET(request:NextRequest){
  await ensureSchema()
- const session=await getAuthenticatedSession()
+ const session=getSession()
  if(!session)return NextResponse.json({error:'Unauthorized'},{status:401})
  const contactId=new URL(request.url).searchParams.get('contactId')
  if(!contactId)return NextResponse.json({error:'contactId is required'},{status:400})
@@ -17,7 +17,7 @@ export async function GET(request:NextRequest){
 }
 export async function POST(request:NextRequest){
  await ensureSchema()
- const session=await getAuthenticatedSession()
+ const session=getSession()
  if(!session)return NextResponse.json({error:'Unauthorized'},{status:401})
  const body=await request.json()
  if(!body.contactId||!body.title)return NextResponse.json({error:'Contact and title are required'},{status:400})
