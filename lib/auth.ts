@@ -6,8 +6,8 @@ const SESSION_DAYS = 30
 const MAX_CLOCK_SKEW_MS = 30000
 
 function secret() {
-  const value = process.env.DATABASE_URL
-  if (!value) throw new Error('DATABASE_URL is not configured')
+  const value = process.env.AUTH_SECRET || process.env.DATABASE_URL
+  if (!value) throw new Error('AUTH_SECRET is not configured')
   return createHash('sha256').update(value).digest()
 }
 
