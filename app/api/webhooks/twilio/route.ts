@@ -35,7 +35,7 @@ function twilioSignatureIsValid(req: NextRequest, params: Record<string, string>
 }
 
 function digits(value: string) {
-  return value.replace(/\\D/g, '')
+  return value.replace(/\D/g, '')
 }
 
 export async function POST(req: NextRequest) {
