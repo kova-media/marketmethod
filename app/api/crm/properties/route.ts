@@ -24,10 +24,15 @@ export async function POST(req:NextRequest){
  const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
- if(!b.contactId||!b.address)return NextResponse.json({error:'Customer and address are required'},{status:400})
+ const address=String(b.address||'').trim()
+ if(!b.contactId||!address)return NextResponse.json({error:'Customer and address are required'},{status:400})
+ if(address.length>500)return NextResponse.json({error:'Address is too long'},{status:400})
+ for(const [key,max] of [['name',200],['city',100],['state',100],['postalCode',30],['notes',5000]] as const){
+  if(b[key]!==undefined&&b[key]!==null&&String(b[key]).length>max)return NextResponse.json({error:key+' is too long'},{status:400})
+ }
  const sql=getDb()
  const c=await sql`select id from contacts where id=${b.contactId} and organization_id=${s.organizationId} limit 1`
  if(!c[0])return NextResponse.json({error:'Customer not found'},{status:404})
- const rows=await sql`insert into properties(organization_id,contact_id,name,address,city,state,postal_code,notes) values(${s.organizationId},${b.contactId},${b.name||null},${b.address},${b.city||null},${b.state||null},${b.postalCode||null},${b.notes||null}) returning *`
+ const rows=await sql`insert into properties(organization_id,contact_id,name,address,city,state,postal_code,notes) values(${s.organizationId},${b.contactId},${b.name?.trim()||null},${address},${b.city?.trim()||null},${b.state?.trim()||null},${b.postalCode?.trim()||null},${b.notes?.trim()||null}) returning *`
  return NextResponse.json({property:rows[0]},{status:201})
 }
