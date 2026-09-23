@@ -49,7 +49,7 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
     const apiKey = process.env.RESEND_API_KEY
     if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
     const to = resolveValue(action.to || '{{contact.email}}', context)
-    const fromEmail = organization?.sender_email
+    const fromEmail = organization?.sender_email || 'notifications@marketmethod.co'
     if (!to) throw new Error('No email recipient is available')
     if (!fromEmail) throw new Error('Workspace sender email is not configured')
     const subject = resolveValue(action.subject, context)
