@@ -20,6 +20,16 @@ export async function POST(request:NextRequest){
  const body=await request.json()
  if(!body.firstName?.trim()) return NextResponse.json({error:'First name is required'},{status:400})
  const sql=getDb()
+ const email=body.email?.trim()||null
+ const phone=body.phone?.trim()||null
+ if(email){
+  const existing=await sql`select id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at from contacts where organization_id=${session.organizationId} and lower(email)=lower(${email}) limit 1`
+  if(existing[0]) return NextResponse.json({error:'A contact with this email already exists.',contact:existing[0]},{status:409})
+ }
+ if(phone){
+  const existing=await sql`select id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at from contacts where organization_id=${session.organizationId} and phone=${phone} limit 1`
+  if(existing[0]) return NextResponse.json({error:'A contact with this phone number already exists.',contact:existing[0]},{status:409})
+ }
  const rows=await sql`insert into contacts(organization_id,first_name,last_name,email,phone,company,type,source,status,notes) values(${session.organizationId},${body.firstName.trim()},${body.lastName?.trim()||null},${body.email?.trim()||null},${body.phone?.trim()||null},${body.company?.trim()||null},${body.type==='customer'?'customer':'lead'},${body.source||'Manual'},${body.status||'new'},${body.notes?.trim()||null}) returning id,first_name,last_name,email,phone,company,type,source,status,notes,created_at,updated_at`
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${session.organizationId},${rows[0].id},${session.userId},'contact_created','Customer created','Contact added manually.')`
  await runAutomations(session.organizationId,'contact_created',rows[0].id,{status:rows[0].status,type:rows[0].type,source:rows[0].source})
