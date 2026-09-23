@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     if (email.length > 320 || phone.length > 40 || businessName.length > 200 || name.length > 200 || message.length > 5000) {
       return NextResponse.json({ error: 'One or more fields are too long.' }, { status: 400 })
     }
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 })
     }
 
