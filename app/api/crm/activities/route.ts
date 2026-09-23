@@ -5,7 +5,7 @@ import { ensureSchema } from '../../../../lib/schema'
 
 export async function GET(request:NextRequest){
  await ensureSchema()
- const session=getSession()
+ const session=await getAuthenticatedSession()
  if(!session)return NextResponse.json({error:'Unauthorized'},{status:401})
  const contactId=new URL(request.url).searchParams.get('contactId')
  if(!contactId)return NextResponse.json({error:'contactId is required'},{status:400})
