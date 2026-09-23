@@ -15,7 +15,7 @@ export async function GET(req:NextRequest){
  }
  const rows=contactId
   ? await sql`select sr.*,v.year,v.make,v.model from service_records sr left join vehicles v on v.id=sr.vehicle_id and v.organization_id=sr.organization_id and v.contact_id=sr.contact_id where sr.organization_id=${s.organizationId} and sr.contact_id=${contactId} order by sr.service_date desc`
-  : await sql`select sr.*,v.year,v.make,v.model from service_records sr left join vehicles v on v.id=sr.vehicle_id and v.organization_id=sr.organizationId and v.contact_id=sr.contact_id where sr.organization_id=${s.organizationId} order by sr.service_date desc limit 500`
+  : await sql`select sr.*,v.year,v.make,v.model from service_records sr left join vehicles v on v.id=sr.vehicle_id and v.organization_id=sr.organization_id and v.contact_id=sr.contact_id where sr.organization_id=${s.organizationId} order by sr.service_date desc limit 500`
  return NextResponse.json({records:rows})
 }
 
