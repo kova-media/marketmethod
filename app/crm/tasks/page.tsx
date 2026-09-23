@@ -22,7 +22,7 @@ export default function TasksPage(){
  const [form,setForm]=useState({title:'',description:'',contactId:'',assignedTo:'',dueAt:''})
  const [error,setError]=useState('')
 
- useEffect(()=>{load()},[])
+ useEffect(()=>{load();const id=new URLSearchParams(window.location.search).get('contact');if(id)setForm(f=>({...f,contactId:id}))},[])
 
  async function load(){
   const [t,c,s]=await Promise.all([fetch('/api/crm/tasks'),fetch('/api/crm/contacts'),fetch('/api/crm/settings')])
