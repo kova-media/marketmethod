@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthenticatedSession } from '../../../../lib/authauthenticated'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { getDb } from '../../../../lib/db'
 import { ensureSchema } from '../../../../lib/schema'
 
