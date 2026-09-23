@@ -126,7 +126,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const apiKey = process.env.RESEND_API_KEY
     if (!apiKey) return NextResponse.json({ error: 'Email sending is not configured.' }, { status: 503 })
     if (!c[0].email) return NextResponse.json({ error: 'This contact does not have an email address.' }, { status: 400 })
-    if (!c[0].sender_email) return NextResponse.json({ error: 'Set a sender email in Settings before sending email.' }, { status: 400 })
+    const senderEmail = c[0].sender_email || 'notifications@marketmethod.co'
 
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -135,9 +135,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: (c[0].sender_name || c[0].organization_name) + ' <' + c[0].sender_email + '>',
+        from: (c[0].sender_name || c[0].organization_name) + ' <' + senderEmail + '>',
         to: [c[0].email],
-        reply_to: c[0].reply_to_email || c[0].sender_email,
+        reply_to: c[0].reply_to_email || senderEmail,
         subject: b.subject?.trim() || 'Message from ' + c[0].organization_name,
         text
       })
