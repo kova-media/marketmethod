@@ -1,6 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
-import {getSession} from '../../../../lib/auth'
 import {ensureSchema} from '../../../../lib/schema'
 export async function GET(){await ensureSchema();const s=await getAuthenticatedSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const sql=getDb();const [automations,events]=await Promise.all([sql`select id,name,trigger_type,conditions,actions,enabled,created_at from automations where organization_id=${s.organizationId} order by created_at desc`,sql`select e.id,e.event_type,e.status,e.created_at,a.name as automation_name from automation_events e join automations a on a.id=e.automation_id where e.organization_id=${s.organizationId} order by e.created_at desc limit 50`]);return NextResponse.json({automations,events})}
 export async function POST(req:NextRequest){await ensureSchema();const s=await getAuthenticatedSession();if(!s)return NextResponse.json({error:'Unauthorized'},{status:401});const b=await req.json();if(!b.name||!b.triggerType)return NextResponse.json({error:'Name and trigger are required'},{status:400});
