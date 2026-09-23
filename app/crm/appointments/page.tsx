@@ -6,8 +6,8 @@ type Appointment={id:string,title:string,starts_at:string,ends_at?:string|null,s
 
 export default function AppointmentsPage(){
  const [items,setItems]=useState<Appointment[]>([]),[contacts,setContacts]=useState<any[]>([]),[show,setShow]=useState(false),[filter,setFilter]=useState('upcoming')
- const [form,setForm]=useState({title:'',contactId:'',startsAt:'',endsAt:'',notes:''})
- useEffect(()=>{load()},[])
+ const [form,setForm]=useState({title:'',contactId:'',startsAt:'',endsAt:'',notes:''});const [error,setError]=useState('');
+ useEffect(()=>{load();const id=new URLSearchParams(window.location.search).get('contact');if(id)setForm(f=>({...f,contactId:id}))},[])
  async function load(){
   const [a,c]=await Promise.all([fetch('/api/crm/appointments'),fetch('/api/crm/contacts')])
   const [ad,cd]=await Promise.all([a.json(),c.json()])
@@ -16,10 +16,11 @@ export default function AppointmentsPage(){
  }
  async function add(e:FormEvent){
   e.preventDefault()
-  if(form.endsAt&&new Date(form.endsAt).getTime()<=new Date(form.startsAt).getTime())return
+  setError('')
+  if(form.endsAt&&new Date(form.endsAt).getTime()<=new Date(form.startsAt).getTime()){setError('End time must be after the start time.');return}
   const r=await fetch('/api/crm/appointments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)})
   const d=await r.json()
-  if(r.ok){setItems(p=>[...p,d.appointment].sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()));setShow(false);setForm({title:'',contactId:'',startsAt:'',endsAt:'',notes:''})}
+  if(r.ok){setItems(p=>[...p,d.appointment].sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()));setShow(false);setForm({title:'',contactId:'',startsAt:'',endsAt:'',notes:''})}else setError(d.error||'Appointment could not be created.')}
  }
  async function status(id:string,value:string){
   const r=await fetch('/api/crm/appointments',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status:value})})
@@ -58,7 +59,7 @@ export default function AppointmentsPage(){
     <select value={a.status} onChange={e=>status(a.id,e.target.value)}><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no_show">No show</option></select>
    </article>):<div className="empty-module"><h2>No appointments here</h2><p>Change the filter or create a new appointment.</p><button className="add-button" onClick={()=>setShow(true)}><Plus size={17}/> Add appointment</button></div>}
   </section>
-  {show&&<div className="modal-overlay" onClick={()=>setShow(false)}><form className="add-modal module-modal" onSubmit={add} onClick={e=>e.stopPropagation()}><button type="button" className="modal-close" onClick={()=>setShow(false)}><X size={18}/></button><span className="eyebrow">SCHEDULE</span><h2>Add appointment</h2><div className="modal-form">
+  {show&&<div className="modal-overlay" onClick={()=>setShow(false)}><form className="add-modal module-modal" onSubmit={add} onClick={e=>e.stopPropagation()}><button type="button" className="modal-close" onClick={()=>setShow(false)}><X size={18}/></button><span className="eyebrow">SCHEDULE</span><h2>Add appointment</h2>{error&&<div className="form-error">{error}</div>}<div className="modal-form">
    <input placeholder="Appointment title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required/>
    <select value={form.contactId} onChange={e=>setForm({...form,contactId:e.target.value})}><option value="">No customer assigned</option>{contacts.map(c=><option key={c.id} value={c.id}>{c.first_name} {c.last_name||''}{c.phone?' · '+c.phone:''}</option>)}</select>
    <input type="datetime-local" value={form.startsAt} onChange={e=>setForm({...form,startsAt:e.target.value})} required/>
