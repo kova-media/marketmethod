@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
-import {getSession} from '../../../../lib/auth'
+import {getAuthenticatedSession} from '../../../../lib/authenticated'
 import {ensureSchema} from '../../../../lib/schema'
 import {runAutomations} from '../../../../lib/automation'
 
