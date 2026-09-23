@@ -14,7 +14,7 @@ const statusOptions=['new','contacted','qualified','won','lost']
 const typeOptions=['lead','customer']
 
 export default function AutomationsPage(){
- const [items,setItems]=useState<any[]>([]),[events,setEvents]=useState<any[]>([]),[show,setShow]=useState(false)
+ const [items,setItems]=useState<any[]>([]),[events,setEvents]=useState<any[]>([]),[show,setShow]=useState(false),[owner,setOwner]=useState(false)
  const [form,setForm]=useState({
   name:'',triggerType:'contact_created',actionType:'create_task',taskTitle:'Follow up with new contact',taskDays:'1',
   emailSubject:'Following up',messageBody:'Hi {{contact.first_name}}, just following up.',recipient:'{{contact.email}}',
@@ -23,6 +23,8 @@ export default function AutomationsPage(){
  const [conditions,setConditions]=useState<any[]>([])
  useEffect(()=>{load()},[])
  async function load(){
+  const me=await fetch('/api/crm/auth/me').then(r=>r.ok?r.json():null)
+  setOwner(me?.user?.role==='owner')
   const r=await fetch('/api/crm/automations');const d=await r.json()
   if(r.ok){setItems(d.automations||[]);setEvents(d.events||[])}
  }
@@ -60,12 +62,12 @@ export default function AutomationsPage(){
  return <main className="module-page">
   <header className="module-top">
    <div><a href="/crm/dashboard" className="back-link"><ChevronLeft size={15}/> Dashboard</a><span className="eyebrow">AUTOMATION</span><h1>Automations</h1><p>Turn repeatable follow-up into rules the system can run for you.</p></div>
-   <button className="add-button" onClick={()=>setShow(true)}><Plus size={17}/> New automation</button>
+   <button className="add-button" disabled={!owner} onClick={()=>setShow(true)}><Plus size={17}/> New automation</button>
   </header>
   <div className="settings-grid">
    <section className="panel settings-panel">
     <div className="panel-head"><div><span className="eyebrow">RULES</span><h3>Active automations</h3></div><span className="count-badge">{items.length}</span></div>
-    {items.map(a=><div className="automation-row" key={a.id}><div><strong>{a.name}</strong><small>{triggers.find(x=>x[0]===a.trigger_type)?.[1]||a.trigger_type} · {describeConditions(a.conditions)}</small></div><button className={'toggle '+(a.enabled?'on':'')} onClick={()=>toggle(a.id,!a.enabled)}><i/></button></div>)}
+    {items.map(a=><div className="automation-row" key={a.id}><div><strong>{a.name}</strong><small>{triggers.find(x=>x[0]===a.trigger_type)?.[1]||a.trigger_type} · {describeConditions(a.conditions)}</small></div><button disabled={!owner} className={'toggle '+(a.enabled?'on':'')} onClick={()=>toggle(a.id,!a.enabled)}><i/></button></div>)}
     {!items.length&&<div className="soft-empty">No automation rules yet.</div>}
    </section>
    <section className="panel settings-panel">
