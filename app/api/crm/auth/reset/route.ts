@@ -12,10 +12,24 @@ export async function POST(req:NextRequest){
  if(!token||password.length<8)return NextResponse.json({error:'A valid token and password of at least 8 characters are required.'},{status:400})
  const sql=getDb()
  const tokenHash=createHash('sha256').update(token).digest('hex')
- const claimed=await sql`update password_resets set used_at=now() where (token_hash=${tokenHash} or token=${token}) and used_at is null and expires_at>now() returning id,user_id`
- if(!claimed[0])return NextResponse.json({error:'This reset link is invalid or expired.'},{status:410})
- const user=await sql`update users set password_hash=${hashPassword(password)} where id=${claimed[0].user_id} returning id,email,name,role,organization_id`
- if(!user[0])return NextResponse.json({error:'Account not found.'},{status:404})
- await createSession(user[0].id,user[0].organization_id)
- return NextResponse.json({user:{id:user[0].id,email:user[0].email,name:user[0].name,role:user[0].role}})
+ const passwordHash=hashPassword(password)
+ const rows=await sql`
+   with claimed as (
+     update password_resets
+     set used_at=now()
+     where (token_hash=${tokenHash} or token=${token})
+       and used_at is null
+       and expires_at>now()
+     returning user_id
+   )
+   update users
+   set password_hash=${passwordHash}
+   from claimed
+   where users.id=claimed.user_id
+   returning users.id,users.email,users.name,users.role,users.organization_id
+ `
+ if(!rows[0])return NextResponse.json({error:'This reset link is invalid or expired.'},{status:410})
+ const user=rows[0]
+ await createSession(user.id,user.organization_id)
+ return NextResponse.json({user:{id:user.id,email:user.email,name:user.name,role:user.role}})
 }
