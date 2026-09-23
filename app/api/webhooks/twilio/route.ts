@@ -135,21 +135,33 @@ export async function POST(req: NextRequest) {
     conversationId = created[0].id
   }
 
+  const messageSid = params.MessageSid || null
   const message = await sql`
     insert into messages(
       organization_id,
       conversation_id,
       direction,
-      body
+      body,
+      external_id,
+      metadata
     )
     values(
       ${organizationId},
       ${conversationId},
       'inbound',
-      ${body}
+      ${body},
+      ${messageSid},
+      ${JSON.stringify({ provider: 'twilio', messageSid, from, to })}
     )
+    on conflict (organization_id, external_id) do nothing
     returning id, direction, body, sent_at
   `
+  if (!message[0]) {
+    return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
+  }
 
   await sql`
     update conversations
