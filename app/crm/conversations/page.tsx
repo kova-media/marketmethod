@@ -225,7 +225,12 @@ export default function ConversationsPage() {
               <header className="conversation-header">
                 <div>
                   <span className="eyebrow">{selected.channel.toUpperCase()}</span>
-                  <h2>{selected.first_name} {selected.last_name || ''}</h2>\n                  <div className="conversation-contact-links">\n                    {selected.email && <a href={'mailto:' + selected.email}><Mail size={13} /> {selected.email}</a>}\n                    {selected.phone && <a href={'tel:' + selected.phone}><Smartphone size={13} /> {selected.phone}</a>}\n                    <a href={'/crm/contacts?contact=' + selected.contact_id}><ExternalLink size={13} /> Contact</a>\n                  </div>
+                  <h2>{selected.first_name} {selected.last_name || ''}</h2>
+                  <div className="conversation-contact-links">
+                    {selected.email && <a href={'mailto:' + selected.email}><Mail size={13} /> {selected.email}</a>}
+                    {selected.phone && <a href={'tel:' + selected.phone}><Smartphone size={13} /> {selected.phone}</a>}
+                    <a href={'/crm/contacts?contact=' + selected.contact_id}><ExternalLink size={13} /> Contact</a>
+                  </div>
                 </div>
                 <button className="conversation-status-button" onClick={toggleStatus}>
                   {selected.status === 'closed' ? 'Reopen' : 'Close'}
