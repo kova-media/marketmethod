@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 
 const SESSION_COOKIE = 'mm_session'
 const SESSION_DAYS = 30
+const MAX_CLOCK_SKEW_MS = 30000
 
 function secret() {
   const value = process.env.DATABASE_URL
@@ -44,7 +45,8 @@ export function getSession() {
   const parts = token.split('.')
   if (parts.length !== 4) return null
   const [userId, organizationId, expiresAt, signature] = parts
-  if (Number(expiresAt) < Date.now()) return null
+  const expires = Number(expiresAt)
+  if (!Number.isFinite(expires) || expires < Date.now() || expires > Date.now() + SESSION_DAYS * 86400000 + MAX_CLOCK_SKEW_MS) return null
   const payload = userId + '.' + organizationId + '.' + expiresAt
   const expected = createHmac('sha256', secret()).update(payload).digest('base64url')
   if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null
