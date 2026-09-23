@@ -11,6 +11,7 @@ type AutomationContext = {
   payload: EventPayload
   contact: any
   organization: any
+  jobId: string | null
 }
 
 function resolveValue(value: any, context: AutomationContext) {
@@ -179,7 +180,7 @@ async function executeActions(sql: any, actions: any[], context: AutomationConte
       const remaining = actions.slice(index + 1)
       if (remaining.length) {
         const runAt = waitUntil(action)
-        await sql`insert into automation_jobs(organization_id,automation_id,contact_id,event_type,actions,payload,run_at) values(${context.organizationId},${context.automationId},${context.contactId},${context.eventType},${JSON.stringify(remaining)},${JSON.stringify(context.payload)},${runAt.toISOString()})`
+        await sql`insert into automation_jobs(organization_id,automation_id,contact_id,event_type,actions,payload,run_at,parent_job_id,wait_step) values(${context.organizationId},${context.automationId},${context.contactId},${context.eventType},${JSON.stringify(remaining)},${JSON.stringify(context.payload)},${runAt.toISOString()},${context.jobId},${index}) on conflict (parent_job_id,wait_step) do nothing`
         details.push({ type: 'wait', runAt: runAt.toISOString(), queuedActions: remaining.length })
       }
       break
@@ -191,12 +192,12 @@ async function executeActions(sql: any, actions: any[], context: AutomationConte
   return details
 }
 
-async function loadContext(sql: any, organizationId: string, automationId: string, contactId: string | null, eventType: string, payload: EventPayload): Promise<AutomationContext> {
+async function loadContext(sql: any, organizationId: string, automationId: string, contactId: string | null, eventType: string, payload: EventPayload, jobId: string | null = null): Promise<AutomationContext> {
   const contact = contactId
     ? (await sql`select id,first_name,last_name,email,phone from contacts where id=${contactId} and organization_id=${organizationId} limit 1`)[0]
     : null
   const organization = (await sql`select id,name,sender_name,sender_email,reply_to_email,sms_from_number from organizations where id=${organizationId} limit 1`)[0]
-  return { organizationId, automationId, contactId, eventType, payload, contact, organization }
+  return { organizationId, automationId, contactId, eventType, payload, contact, organization, jobId }
 }
 
 export async function runAutomations(organizationId: string, eventType: string, contactId: string | null, payload: EventPayload = {}) {
@@ -242,7 +243,7 @@ export async function runAutomationJob(jobId: string) {
     return { status: 'cancelled' }
   }
 
-  const context = await loadContext(sql, job.organization_id, job.automation_id, job.contact_id, job.event_type, job.payload || {})
+  const context = await loadContext(sql, job.organization_id, job.automation_id, job.contact_id, job.event_type, job.payload || {}, job.id)
   let status = 'completed'
   let details: any[] = []
 
