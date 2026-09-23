@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
     `)[0]
   }
 
-  await sql`
+  const inserted = await sql`
     insert into messages(
       organization_id,
       conversation_id,
@@ -201,7 +201,13 @@ export async function POST(req: NextRequest) {
         to: recipients
       })}
     )
+    on conflict (organization_id, external_id) do nothing
+    returning id
   `
+
+  if (!inserted[0]) {
+    return NextResponse.json({ received: true, duplicate: true })
+  }
 
   await sql`
     update conversations
