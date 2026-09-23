@@ -16,6 +16,7 @@ export default function ConversationsPage() {
   const [channel, setChannel] = useState('sms')
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
+  const [createError, setCreateError] = useState('')
 
   useEffect(() => {
     load()
@@ -58,7 +59,8 @@ export default function ConversationsPage() {
   }
 
   async function create() {
-    if (!contactId) return
+    if (!contactId) { setCreateError('Choose a contact first.'); return }
+    setCreateError('')
 
     const r = await fetch('/api/crm/conversations', {
       method: 'POST',
@@ -86,7 +88,7 @@ export default function ConversationsPage() {
       }
 
       open(found)
-    }
+    } else setCreateError(d.error || 'Conversation could not be created.')
   }
 
   async function send() {
@@ -295,6 +297,7 @@ export default function ConversationsPage() {
 
             <span className="eyebrow">NEW CONVERSATION</span>
             <h2>Start a conversation</h2>
+            {createError && <div className="form-error">{createError}</div>}
 
             <div className="modal-form">
               <select value={contactId} onChange={e => setContactId(e.target.value)}>
