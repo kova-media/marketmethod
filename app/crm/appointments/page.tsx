@@ -20,7 +20,7 @@ export default function AppointmentsPage(){
   if(form.endsAt&&new Date(form.endsAt).getTime()<=new Date(form.startsAt).getTime()){setError('End time must be after the start time.');return}
   const r=await fetch('/api/crm/appointments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(form)})
   const d=await r.json()
-  if(r.ok){setItems(p=>[...p,d.appointment].sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()));setShow(false);setForm({title:'',contactId:'',startsAt:'',endsAt:'',notes:''})}else setError(d.error||'Appointment could not be created.')}
+  if(r.ok){setItems(p=>[...p,d.appointment].sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()));setShow(false);setForm({title:'',contactId:'',startsAt:'',endsAt:'',notes:''})}else setError(d.error||'Appointment could not be created.')
  }
  async function status(id:string,value:string){
   const r=await fetch('/api/crm/appointments',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status:value})})
