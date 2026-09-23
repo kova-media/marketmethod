@@ -229,7 +229,7 @@ export async function runAutomationJob(jobId: string) {
   await ensureSchema()
   const sql = getDb()
 
-  const claimed = await sql`update automation_jobs set status='running', attempts=attempts+1 where id=${jobId} and status='pending' and run_at<=now() returning *`
+  const claimed = await sql`update automation_jobs set status='running', attempts=attempts+1, started_at=now() where id=${jobId} and status='pending' and run_at<=now() returning *`
   const job = claimed[0]
   if (!job) return { status: 'skipped' }
 
@@ -238,7 +238,7 @@ export async function runAutomationJob(jobId: string) {
     : null
 
   if (job.automation_id && (!automation || !automation.enabled)) {
-    await sql`update automation_jobs set status='cancelled',completed_at=now() where id=${job.id}`
+    await sql`update automation_jobs set status='cancelled',completed_at=now(),started_at=null where id=${job.id}`
     return { status: 'cancelled' }
   }
 
@@ -249,16 +249,16 @@ export async function runAutomationJob(jobId: string) {
   try {
     details = await executeActions(sql, Array.isArray(job.actions) ? job.actions : [], context)
     if (details.some(item => item.type === 'wait' && item.queuedActions > 0)) status = 'queued'
-    await sql`update automation_jobs set status=${status},completed_at=now(),last_error=null where id=${job.id}`
+    await sql`update automation_jobs set status=${status},completed_at=now(),started_at=null,last_error=null where id=${job.id}`
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Automation action failed'
     details.push({ error: message })
     if (Number(job.attempts || 0) < 3) {
       status = 'retrying'
-      await sql`update automation_jobs set status='pending',run_at=now()+interval '5 minutes',completed_at=null,last_error=${message} where id=${job.id}`
+      await sql`update automation_jobs set status='pending',run_at=now()+interval '5 minutes',completed_at=null,started_at=null,last_error=${message} where id=${job.id}`
     } else {
       status = 'failed'
-      await sql`update automation_jobs set status='failed',completed_at=now(),last_error=${message} where id=${job.id}`
+      await sql`update automation_jobs set status='failed',completed_at=now(),started_at=null,last_error=${message} where id=${job.id}`
     }
   }
 
