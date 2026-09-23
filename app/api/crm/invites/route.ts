@@ -14,8 +14,8 @@ async function ownerSession(){
 
 export async function GET(){
  await ensureSchema()
- const s=getSession()
- if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
+ const s=await ownerSession()
+ if(!s)return NextResponse.json({error:'Owner access required'},{status:403})
  const sql=getDb()
  const invites=await sql`select id,email,role,expires_at,accepted_at,created_at from user_invites where organization_id=${s.organizationId} order by created_at desc limit 50`
  return NextResponse.json({invites})
