@@ -8,7 +8,10 @@ const conditionFields=[
  ['status','Status'],
  ['previousStatus','Previous status'],
  ['type','Contact type'],
- ['source','Lead source']
+ ['source','Lead source'],
+ ['serviceType','Service type'],
+ ['mileage','Service mileage'],
+ ['nextRecommendedDate','Next recommended date']
 ]
 const statusOptions=['new','contacted','qualified','won','lost']
 const typeOptions=['lead','customer']
