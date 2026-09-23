@@ -2,6 +2,7 @@ import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
 import {getSession} from '../../../../lib/auth'
 import {ensureSchema} from '../../../../lib/schema'
+import {runAutomations} from '../../../../lib/automation'
 
 export async function GET(req:NextRequest){
  await ensureSchema()
@@ -35,6 +36,7 @@ export async function POST(req:NextRequest){
  const serviceDate=b.serviceDate||new Date().toISOString().slice(0,10)
  const rows=await sql`insert into service_records(organization_id,contact_id,vehicle_id,service_date,service_type,mileage,amount,notes,next_recommended_date,next_recommended_mileage) values(${s.organizationId},${b.contactId},${b.vehicleId||null},${serviceDate},${b.serviceType},${b.mileage||null},${b.amount||null},${b.notes||null},${b.nextRecommendedDate||null},${b.nextRecommendedMileage||null}) returning *`
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${s.organizationId},${b.contactId},${s.userId},'service_recorded','Service recorded',${b.serviceType})`
+ await runAutomations(s.organizationId,'service_record_created',b.contactId,{serviceType:rows[0].service_type,mileage:rows[0].mileage,nextRecommendedDate:rows[0].next_recommended_date})
  if(b.nextRecommendedDate){
   const existing=await sql`select id from tasks where organization_id=${s.organizationId} and contact_id=${b.contactId} and completed_at is null and title=${'Recommended service: '+b.serviceType} and due_at::date=${b.nextRecommendedDate}::date limit 1`
   if(!existing[0])await sql`insert into tasks(organization_id,contact_id,title,description,due_at) values(${s.organizationId},${b.contactId},${'Recommended service: '+b.serviceType},${'Follow up on the recommended service recorded on '+serviceDate+'.'},${b.nextRecommendedDate})`
