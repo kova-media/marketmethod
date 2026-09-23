@@ -50,6 +50,8 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
     if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
     const to = resolveValue(action.to || '{{contact.email}}', context)
     const fromEmail = organization?.sender_email || 'notifications@marketmethod.co'
+    const inbound = contactId ? (await sql`select metadata from messages m join conversations c on c.id=m.conversation_id where m.organization_id=${organizationId} and c.contact_id=${contactId} and c.channel='email' and m.direction='inbound' and m.metadata->>'messageId' is not null order by m.sent_at desc limit 1`)[0] : null
+    const replyHeaders = inbound?.metadata?.messageId ? { 'In-Reply-To': inbound.metadata.messageId, 'References': inbound.metadata.messageId } : undefined
     if (!to) throw new Error('No email recipient is available')
     if (!fromEmail) throw new Error('Workspace sender email is not configured')
     const subject = resolveValue(action.subject, context)
@@ -62,7 +64,8 @@ async function executeAction(sql: any, action: any, context: AutomationContext) 
         to: [to],
         reply_to: organization?.reply_to_email || fromEmail,
         subject,
-        text: body
+        text: body,
+        ...(replyHeaders ? { headers: replyHeaders } : {})
       }),
     })
     if (!response.ok) throw new Error('Email action failed: ' + await response.text())
