@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server'
-import {randomBytes} from 'crypto'
+import {createHash,randomBytes} from 'crypto'
 import {getDb} from '../../../../lib/db'
 import {getSession} from '../../../../lib/auth'
 import {ensureSchema} from '../../../../lib/schema'
@@ -33,7 +33,8 @@ export async function POST(req:NextRequest){
  const existing=await sql`select id from users where organization_id=${s.organizationId} and email=${email} limit 1`
  if(existing[0])return NextResponse.json({error:'That email is already a user in this workspace.'},{status:409})
  const token=randomBytes(24).toString('hex')
- const rows=await sql`insert into user_invites(organization_id,email,role,token,expires_at,created_by) values(${s.organizationId},${email},${role},${token},now()+interval '7 days',${s.userId}) returning id,email,role,expires_at,token`
+ const tokenHash=createHash('sha256').update(token).digest('hex')
+ const rows=await sql`insert into user_invites(organization_id,email,role,token,token_hash,expires_at,created_by) values(${s.organizationId},${email},${role},${tokenHash},${tokenHash},now()+interval '7 days',${s.userId}) returning id,email,role,expires_at`
  const inviteUrl='/crm/invite/'+token
  const appUrl=process.env.CRM_APP_URL||'https://marketmethod.co'
  const apiKey=process.env.RESEND_API_KEY
