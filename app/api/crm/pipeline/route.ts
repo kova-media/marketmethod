@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authauthenticated'
 import { ensureSchema } from '../../../../lib/schema'
 import { runAutomations } from '../../../../lib/automation'
 
 export async function GET() {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const sql = getDb()
   const [stages, contacts] = await Promise.all([
@@ -18,7 +18,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   await ensureSchema()
-  const s = getSession()
+  const s = await getAuthenticatedSession()
   if (!s) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const b = await req.json()
   const contactId = String(b.contactId || '')
