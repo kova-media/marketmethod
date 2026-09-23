@@ -20,6 +20,16 @@ export async function GET(req: NextRequest) {
 
   if (!contactId) return NextResponse.json({ fields })
 
+  const contact = await sql`
+    select id
+    from contacts
+    where id = ${contactId}
+      and organization_id = ${s.organizationId}
+    limit 1
+  `
+
+  if (!contact[0]) return NextResponse.json({ error: 'Contact not found' }, { status: 404 })
+
   const values = await sql`
     select
       cf.id as custom_field_id,
@@ -34,16 +44,6 @@ export async function GET(req: NextRequest) {
     where cf.organization_id = ${s.organizationId}
     order by cf.name asc
   `
-
-  const contact = await sql`
-    select id
-    from contacts
-    where id = ${contactId}
-      and organization_id = ${s.organizationId}
-    limit 1
-  `
-
-  if (!contact[0]) return NextResponse.json({ error: 'Contact not found' }, { status: 404 })
 
   return NextResponse.json({ fields, values })
 }
