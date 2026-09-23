@@ -22,6 +22,13 @@ export default function ConversationsPage() {
     load()
   }, [])
 
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('contact')
+    if (!id || selected || !items.length) return
+    const match = items.find(item => item.contact_id === id)
+    if (match) open(match)
+  }, [items, selected])
+
   async function load() {
     const [a, b] = await Promise.all([
       fetch('/api/crm/conversations'),
