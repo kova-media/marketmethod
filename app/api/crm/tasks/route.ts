@@ -1,11 +1,11 @@
 import { NextRequest,NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getSession } from '../../../../lib/auth'
+import { getAuthenticatedSession } from '../../../../lib/authenticated'
 import { ensureSchema } from '../../../../lib/schema'
 
 export async function GET(){
  await ensureSchema()
- const s=getSession()
+ const s=await getAuthenticatedSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const sql=getDb()
  const rows=await sql`select t.id,t.title,t.description,t.due_at,t.completed_at,t.contact_id,t.assigned_to,c.first_name,c.last_name,u.name as assigned_name from tasks t left join contacts c on c.id=t.contact_id and c.organization_id=t.organization_id left join users u on u.id=t.assigned_to and u.organization_id=t.organization_id where t.organization_id=${s.organizationId} order by t.completed_at nulls first,t.due_at nulls last limit 250`
@@ -14,7 +14,7 @@ export async function GET(){
 
 export async function POST(req:NextRequest){
  await ensureSchema()
- const s=getSession()
+ const s=await getAuthenticatedSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
  const title=String(b.title||'').trim()
@@ -34,7 +34,7 @@ export async function POST(req:NextRequest){
 
 export async function PATCH(req:NextRequest){
  await ensureSchema()
- const s=getSession()
+ const s=await getAuthenticatedSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
  if(!b.id)return NextResponse.json({error:'Task id is required'},{status:400})
