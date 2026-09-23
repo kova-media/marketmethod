@@ -74,13 +74,15 @@ export async function POST(req: NextRequest) {
     .replace(/[^a-z0-9_]+/g, '_')
     .replace(/^_+|_+$/g, '')
 
+  const fieldType = ['text','number','date','boolean','select'].includes(String(b.fieldType)) ? String(b.fieldType) : 'text'
+
   if (!name || !fieldKey) {
     return NextResponse.json({ error: 'Field name is required' }, { status: 400 })
   }
 
   const rows = await sql`
     insert into custom_fields(organization_id, name, field_key, field_type)
-    values(${s.organizationId}, ${name}, ${fieldKey}, ${b.fieldType || 'text'})
+    values(${s.organizationId}, ${name}, ${fieldKey}, ${fieldType})
     on conflict (organization_id, field_key)
     do update set
       name = excluded.name,
