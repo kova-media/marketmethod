@@ -17,7 +17,7 @@ export async function GET(request:NextRequest){
 }
 export async function POST(request:NextRequest){
  await ensureSchema()
- const session=getSession()
+ const session=await getAuthenticatedSession()
  if(!session)return NextResponse.json({error:'Unauthorized'},{status:401})
  const body=await request.json()
  if(!body.contactId||!body.title)return NextResponse.json({error:'Contact and title are required'},{status:400})
