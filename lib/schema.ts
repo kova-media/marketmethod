@@ -9,6 +9,8 @@ const statements = [
   `alter table organizations add column if not exists sms_from_number text`,
   `create table if not exists users (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, email text not null, name text not null, role text not null default 'member', password_hash text, created_at timestamptz not null default now(), unique(organization_id,email))`,
   `create table if not exists password_resets (id uuid primary key default gen_random_uuid(), user_id uuid not null references users(id) on delete cascade, token text not null unique, expires_at timestamptz not null, used_at timestamptz, created_at timestamptz not null default now())`,
+  `alter table password_resets add column if not exists token_hash text`,
+  `create unique index if not exists password_resets_token_hash_idx on password_resets(token_hash) where token_hash is not null`,
   `create index if not exists password_resets_user_idx on password_resets(user_id)`,
   `create table if not exists user_invites (id uuid primary key default gen_random_uuid(), organization_id uuid not null references organizations(id) on delete cascade, email text not null, role text not null default 'member', token text not null unique, expires_at timestamptz not null, accepted_at timestamptz, created_by uuid references users(id) on delete set null, created_at timestamptz not null default now())`,
   `create index if not exists user_invites_org_idx on user_invites(organization_id)`,
