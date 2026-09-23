@@ -17,7 +17,7 @@ export async function GET(){
  const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const sql=getDb()
- const invites=await sql`select id,email,role,expires_at,accepted_at,created_at,token from user_invites where organization_id=${s.organizationId} order by created_at desc limit 50`
+ const invites=await sql`select id,email,role,expires_at,accepted_at,created_at from user_invites where organization_id=${s.organizationId} order by created_at desc limit 50`
  return NextResponse.json({invites})
 }
 
@@ -35,7 +35,7 @@ export async function POST(req:NextRequest){
  const token=randomBytes(24).toString('hex')
  const rows=await sql`insert into user_invites(organization_id,email,role,token,expires_at,created_by) values(${s.organizationId},${email},${role},${token},now()+interval '7 days',${s.userId}) returning id,email,role,expires_at,token`
  const inviteUrl='/crm/invite/'+token
- const appUrl=process.env.CRM_APP_URL||'https://marketmethod.com'
+ const appUrl=process.env.CRM_APP_URL||'https://marketmethod.co'
  const apiKey=process.env.RESEND_API_KEY
  let emailSent=false
  if(apiKey){
