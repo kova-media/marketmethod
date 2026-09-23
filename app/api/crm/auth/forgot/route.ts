@@ -7,7 +7,7 @@ export async function POST(req:NextRequest){
  await ensureSchema()
  const b=await req.json()
  const email=String(b.email||'').trim().toLowerCase()
- if(!email)return NextResponse.json({success:true})
+ if(!email||email.length>320)return NextResponse.json({success:true})
  const sql=getDb()
  const users=await sql`select u.id,u.email,o.name as organization_name from users u join organizations o on o.id=u.organization_id where lower(u.email)=${email} limit 1`
  if(users[0]){
