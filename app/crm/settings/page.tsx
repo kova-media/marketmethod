@@ -14,6 +14,7 @@ export default function SettingsPage(){
  const [fields,setFields]=useState<any[]>([])
  const [newField,setNewField]=useState('')
  const [integrations,setIntegrations]=useState<any>({})
+ const [messageError,setMessageError]=useState('')
 
  useEffect(()=>{
   Promise.all([fetch('/api/crm/settings'),fetch('/api/crm/invites'),fetch('/api/crm/custom-fields')]).then(async([a,b,c])=>{
@@ -33,11 +34,12 @@ export default function SettingsPage(){
  async function removeStage(id:string){const r=await fetch('/api/crm/stages',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});if(r.ok)setStages(p=>p.filter(x=>x.id!==id))}
 
  async function save(){
+  setMessageError('')
   const r=await fetch('/api/crm/settings',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({
    name:org.name,industry:org.industry,primaryColor:org.primary_color,logoUrl:org.logo_url,
    senderName:org.sender_name,senderEmail:org.sender_email,replyToEmail:org.reply_to_email,smsFromNumber:org.sms_from_number
   })})
-  if(r.ok){const d=await r.json();setOrg(d.organization);setSaved(true);setTimeout(()=>setSaved(false),1800)}
+  if(r.ok){const d=await r.json();setOrg(d.organization);setSaved(true);setTimeout(()=>setSaved(false),1800)} else {const d=await r.json();setMessageError(d.error||'Settings could not be saved.')}}
  }
 
  async function invite(){
@@ -52,6 +54,7 @@ export default function SettingsPage(){
    <div><a href="/crm/dashboard" className="back-link"><ChevronLeft size={15}/> Dashboard</a><span className="eyebrow">WORKSPACE</span><h1>Settings</h1><p>Configure the business this workspace belongs to.</p></div>
    <button className="add-button" onClick={save}>{saved?'Saved':'Save changes'}</button>
   </header>
+  {messageError&&<div className="form-error">{messageError}</div>}
   {org?<div className="settings-grid">
    <section className="panel settings-panel">
     <div className="panel-head"><div><span className="eyebrow">BUSINESS</span><h3>Workspace details</h3></div></div>
