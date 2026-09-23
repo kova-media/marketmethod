@@ -8,7 +8,7 @@ export async function GET(){
  const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const sql=getDb()
- const rows=await sql`select t.id,t.title,t.description,t.due_at,t.completed_at,t.contact_id,t.assigned_to,c.first_name,c.last_name,u.name as assigned_name from tasks t left join contacts c on c.id=t.contact_id left join users u on u.id=t.assigned_to and u.organization_id=t.organization_id where t.organization_id=${s.organizationId} order by t.completed_at nulls first,t.due_at nulls last limit 250`
+ const rows=await sql`select t.id,t.title,t.description,t.due_at,t.completed_at,t.contact_id,t.assigned_to,c.first_name,c.last_name,u.name as assigned_name from tasks t left join contacts c on c.id=t.contact_id and c.organization_id=t.organization_id left join users u on u.id=t.assigned_to and u.organization_id=t.organization_id where t.organization_id=${s.organizationId} order by t.completed_at nulls first,t.due_at nulls last limit 250`
  return NextResponse.json({tasks:rows})
 }
 
@@ -33,6 +33,7 @@ export async function PATCH(req:NextRequest){
  const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
+ if(!b.id)return NextResponse.json({error:'Task id is required'},{status:400})
  const sql=getDb()
  const rows=await sql`update tasks set completed_at=${b.completed?new Date().toISOString():null} where id=${b.id} and organization_id=${s.organizationId} returning *`
  if(!rows[0])return NextResponse.json({error:'Task not found'},{status:404})
