@@ -1,6 +1,6 @@
 import { NextRequest,NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/db'
-import { getAuthenticatedSession } from '../../../../lib/authenticated'
+import { getSession } from '../../../../lib/auth'
 import { ensureSchema } from '../../../../lib/schema'
 
 export async function GET(){
