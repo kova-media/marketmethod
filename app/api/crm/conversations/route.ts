@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
   if (!b.contactId || !b.channel) {
     return NextResponse.json({ error: 'Contact and channel are required' }, { status: 400 })
   }
+  if (!['email','sms'].includes(String(b.channel))) {
+    return NextResponse.json({ error: 'Channel must be email or sms' }, { status: 400 })
+  }
 
   const sql = getDb()
   const c = await sql`
