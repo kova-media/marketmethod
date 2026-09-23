@@ -27,7 +27,7 @@ export async function POST(req:NextRequest){
  if(!s)return NextResponse.json({error:'Owner access required'},{status:403})
  const b=await req.json()
  const email=String(b.email||'').trim().toLowerCase()
- if(!email)return NextResponse.json({error:'Email is required'},{status:400})
+ if(!email||email.length>320||!/^\S+@\S+\.\S+$/.test(email))return NextResponse.json({error:'Valid email is required'},{status:400})
  const role=b.role==='owner'?'owner':'member'
  const sql=getDb()
  const existing=await sql`select id from users where organization_id=${s.organizationId} and email=${email} limit 1`
