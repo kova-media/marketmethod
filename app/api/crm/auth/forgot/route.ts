@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server'
-import {randomBytes} from 'crypto'
+import {createHash,randomBytes} from 'crypto'
 import {getDb} from '../../../../../lib/db'
 import {ensureSchema} from '../../../../../lib/schema'
 
@@ -12,8 +12,9 @@ export async function POST(req:NextRequest){
  const users=await sql`select u.id,u.email,o.name as organization_name from users u join organizations o on o.id=u.organization_id where lower(u.email)=${email} limit 1`
  if(users[0]){
   const token=randomBytes(32).toString('hex')
+  const tokenHash=createHash('sha256').update(token).digest('hex')
   await sql`update password_resets set used_at=now() where user_id=${users[0].id} and used_at is null`
-  await sql`insert into password_resets(user_id,token,expires_at) values(${users[0].id},${token},now()+interval '1 hour')`
+  await sql`insert into password_resets(user_id,token,token_hash,expires_at) values(${users[0].id},${token},${tokenHash},now()+interval '1 hour')`
   const apiKey=process.env.RESEND_API_KEY
   const appUrl=process.env.CRM_APP_URL||'https://marketmethod.co'
   if(apiKey){
