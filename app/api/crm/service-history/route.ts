@@ -36,7 +36,7 @@ export async function POST(req:NextRequest){
  }
 
  const serviceDate=b.serviceDate||new Date().toISOString().slice(0,10)
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(serviceDate))||Number.isNaN(new Date(String(serviceDate)+'T00:00:00Z').getTime()))return NextResponse.json({error:'Invalid service date'},{status:400})
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(serviceDate))||Number.isNaN(new Date(String(serviceDate)+'T00:00:00Z').getTime()))return NextResponse.json({error:'Invalid service date'},{status:400})
  if(String(b.serviceType).length>200)return NextResponse.json({error:'Service type is too long'},{status:400})
  if(b.amount!==undefined&&b.amount!==null&&(!Number.isFinite(Number(b.amount))||Number(b.amount)<0||Number(b.amount)>100000000))return NextResponse.json({error:'Invalid amount'},{status:400})
  if(b.notes&&String(b.notes).length>10000)return NextResponse.json({error:'Service notes are too long'},{status:400})
