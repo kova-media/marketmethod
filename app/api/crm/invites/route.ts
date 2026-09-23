@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {createHash,randomBytes} from 'crypto'
 import {getDb} from '../../../../lib/db'
-import {getSession} from '../../../../lib/auth'
+import {getAuthenticatedSession} from '../../../../lib/authenticated'
 import {ensureSchema} from '../../../../lib/schema'
 
 async function ownerSession(){
