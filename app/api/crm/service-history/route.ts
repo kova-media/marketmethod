@@ -1,12 +1,11 @@
 import {NextRequest,NextResponse} from 'next/server'
 import {getDb} from '../../../../lib/db'
-import {getAuthenticatedSession} from '../../../../lib/authenticated'
+import {getSession} from '../../../../lib/auth'
 import {ensureSchema} from '../../../../lib/schema'
-import {runAutomations} from '../../../../lib/automation'
 
 export async function GET(req:NextRequest){
  await ensureSchema()
- const s=await getAuthenticatedSession()
+ const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const contactId=new URL(req.url).searchParams.get('contactId')
  const sql=getDb()
@@ -22,7 +21,7 @@ export async function GET(req:NextRequest){
 
 export async function POST(req:NextRequest){
  await ensureSchema()
- const s=await getAuthenticatedSession()
+ const s=getSession()
  if(!s)return NextResponse.json({error:'Unauthorized'},{status:401})
  const b=await req.json()
  if(!b.contactId||!b.serviceType)return NextResponse.json({error:'Customer and service type are required'},{status:400})
@@ -35,13 +34,7 @@ export async function POST(req:NextRequest){
   if(!property[0])return NextResponse.json({error:'Property not found for this customer'},{status:404})
  }
 
- const serviceDate=b.serviceDate||new Date().toISOString().slice(0,10)
- if(!/^\d{4}-\d{2}-\d{2}$/.test(String(serviceDate))||Number.isNaN(new Date(String(serviceDate)+'T00:00:00Z').getTime()))return NextResponse.json({error:'Invalid service date'},{status:400})
- if(String(b.serviceType).length>200)return NextResponse.json({error:'Service type is too long'},{status:400})
- if(b.amount!==undefined&&b.amount!==null&&(!Number.isFinite(Number(b.amount))||Number(b.amount)<0||Number(b.amount)>100000000))return NextResponse.json({error:'Invalid amount'},{status:400})
- if(b.notes&&String(b.notes).length>10000)return NextResponse.json({error:'Service notes are too long'},{status:400})
- const rows=await sql`insert into service_history(organization_id,contact_id,property_id,service_date,service_type,amount,notes,next_recommended_date) values(${s.organizationId},${b.contactId},${b.propertyId||null},${serviceDate},${b.serviceType},${b.amount||null},${b.notes||null},${b.nextRecommendedDate||null}) returning *`
+ const rows=await sql`insert into service_history(organization_id,contact_id,property_id,service_date,service_type,amount,notes,next_recommended_date) values(${s.organizationId},${b.contactId},${b.propertyId||null},${b.serviceDate||new Date().toISOString().slice(0,10)},${b.serviceType},${b.amount||null},${b.notes||null},${b.nextRecommendedDate||null}) returning *`
  await sql`insert into activities(organization_id,contact_id,user_id,type,title,body) values(${s.organizationId},${b.contactId},${s.userId},'service_recorded','Service recorded',${b.serviceType})`
- await runAutomations(s.organizationId,'service_record_created',b.contactId,{serviceType:rows[0].service_type,nextRecommendedDate:rows[0].next_recommended_date})
  return NextResponse.json({record:rows[0]},{status:201})
 }
